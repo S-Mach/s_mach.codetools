@@ -1,6 +1,6 @@
-package net.s_mach.codegen
+package net.s_mach.codetools
 
-import net.s_mach.codegen.impl.CodegenOps
+import net.s_mach.codetools.impl.CodegenOps
 import org.scalatest.{Matchers, FlatSpec}
 
 class CodegenOpsTest extends FlatSpec with Matchers {

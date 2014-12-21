@@ -1,6 +1,6 @@
-package net.s_mach.codegen.impl
+package net.s_mach.codetools.impl
 
-import net.s_mach.codegen.CaseClassField
+import net.s_mach.codetools.CaseClassField
 
 object CodegenOps {
   /**

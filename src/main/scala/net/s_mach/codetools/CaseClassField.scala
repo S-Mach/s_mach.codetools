@@ -1,4 +1,4 @@
-package net.s_mach.codegen
+package net.s_mach.codetools
 
 case class CaseClassField(
   fieldName: String,

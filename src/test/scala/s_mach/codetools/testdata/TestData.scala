@@ -16,9 +16,9 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package net.s_mach.codetools.testdata
+package s_mach.codetools.testdata
 
-import net.s_mach.codetools.printable._
+import s_mach.codetools.printable._
 
 case class TestData(value: String)
 object TestData {

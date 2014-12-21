@@ -16,7 +16,7 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package net.s_mach.codetools.printable
+package s_mach.codetools.printable
 
 trait Printable[A] {
   def print(a: A) : String

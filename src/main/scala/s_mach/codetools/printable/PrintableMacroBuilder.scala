@@ -16,9 +16,9 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package net.s_mach.codetools.printable
+package s_mach.codetools.printable
 
-import net.s_mach.codetools.printable.impl.PrintableMacroBuilderImpl
+import s_mach.codetools.printable.impl.PrintableMacroBuilderImpl
 
 import scala.reflect.macros.blackbox
 

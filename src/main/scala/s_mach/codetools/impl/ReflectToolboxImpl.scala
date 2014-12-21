@@ -16,9 +16,9 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package net.s_mach.codetools.impl
+package s_mach.codetools.impl
 
-import net.s_mach.codetools.StructContext
+import s_mach.codetools.StructContext
 
 trait ReflectToolboxImpl extends StructContext {
   object impl {

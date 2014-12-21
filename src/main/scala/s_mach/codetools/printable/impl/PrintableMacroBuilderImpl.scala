@@ -16,10 +16,10 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package net.s_mach.codetools.printable.impl
+package s_mach.codetools.printable.impl
 
-import net.s_mach.codetools.ReflectToolbox
-import net.s_mach.codetools.printable.{PrintableMacroBuilder, Printable}
+import s_mach.codetools.ReflectToolbox
+import s_mach.codetools.printable.{PrintableMacroBuilder, Printable}
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox

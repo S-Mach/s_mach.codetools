@@ -16,7 +16,7 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package net.s_mach.codetools
+package s_mach.codetools
 
 class ReflectToolboxTest {
   // TODO:

@@ -16,10 +16,10 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package net.s_mach.codetools
+package s_mach.codetools
 
-import net.s_mach.codetools.printable.Printable
-import net.s_mach.codetools.printable._
+import s_mach.codetools.printable.Printable
+import s_mach.codetools.printable._
 
 package object testdata {
   implicit def mkPrintable_Tuple3[A,B,C](implicit

@@ -16,11 +16,12 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package net.s_mach.codetools
+package net.s_mach.codetools.printable
 
-case class CaseClassField(
-  fieldName: String,
-  scalaType: String,
-  optDefaultValue: Option[String] = None,
-  optComment: Option[String] = None
-)
+trait Printable[A] {
+  def print(a: A) : String
+}
+
+class SimplePrintable[A] extends Printable[A] {
+  def print(a: A) = a.toString
+}

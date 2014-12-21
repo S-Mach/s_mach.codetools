@@ -16,11 +16,19 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package net.s_mach.codetools
+package net.s_mach.codetools.printable
 
-case class CaseClassField(
-  fieldName: String,
-  scalaType: String,
-  optDefaultValue: Option[String] = None,
-  optComment: Option[String] = None
-)
+import net.s_mach.codetools.printable.impl.PrintableMacroBuilderImpl
+
+import scala.reflect.macros.blackbox
+
+trait PrintableMacroBuilder {
+  val c:blackbox.Context
+  def build[A: c.WeakTypeTag]() : c.Expr[Printable[A]]
+}
+
+object PrintableMacroBuilder {
+  def apply(c:blackbox.Context) : PrintableMacroBuilder =
+    new PrintableMacroBuilderImpl(c)
+}
+

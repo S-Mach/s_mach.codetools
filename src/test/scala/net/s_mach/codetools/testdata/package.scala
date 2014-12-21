@@ -18,9 +18,13 @@
 */
 package net.s_mach.codetools
 
-case class CaseClassField(
-  fieldName: String,
-  scalaType: String,
-  optDefaultValue: Option[String] = None,
-  optComment: Option[String] = None
-)
+import net.s_mach.codetools.printable.Printable
+import net.s_mach.codetools.printable._
+
+package object testdata {
+  implicit def mkPrintable_Tuple3[A,B,C](implicit
+    aPrintable:Printable[A],
+    bPrintable:Printable[B],
+    cPrintable:Printable[C]
+  ) = mkPrintable[(A,B,C)]
+}

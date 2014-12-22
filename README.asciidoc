@@ -1,4 +1,4 @@
-= s_mach.codetools: Marco, codegen and code utility library
+= s_mach.codetools: Macro, codegen and code utility library
 Lance Gatlin <lance.gatlin@gmail.com>
 v1,01-Dec-2014
 :blogpost-status: unpublished

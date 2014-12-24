@@ -18,13 +18,13 @@
 */
 package s_mach.codetools
 
-import s_mach.codetools.printable.Printable
-import s_mach.codetools.printable._
+import s_mach.codetools.reflectPrint.ReflectPrint
+import s_mach.codetools.reflectPrint._
 
 package object testdata {
   implicit def mkPrintable_Tuple3[A,B,C](implicit
-    aPrintable:Printable[A],
-    bPrintable:Printable[B],
-    cPrintable:Printable[C]
-  ) = mkPrintable[(A,B,C)]
+    aPrintable:ReflectPrint[A],
+    bPrintable:ReflectPrint[B],
+    cPrintable:ReflectPrint[C]
+  ) = mkReflectPrint[(A,B,C)]
 }

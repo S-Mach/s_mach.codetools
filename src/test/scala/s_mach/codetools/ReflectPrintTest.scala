@@ -66,6 +66,12 @@ class ReflectPrintTest extends FlatSpec with Matchers {
       """("a",1,1.0)"""
     )
   }
+
+  "Macro.printUnapply" must "correctly print the code necessary to create the same instance of a single value" in {
+    TestData(value="asdf").printUnapply should equal(
+      """"asdf""""
+    )
+  }
   "Macro.printUnapply" must "correctly print the code necessary to create the same instance of a tuple" in {
     ("a",1,1.0).printUnapply should equal(
       """("a",1,1.0)"""

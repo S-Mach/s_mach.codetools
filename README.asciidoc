@@ -1,8 +1,48 @@
 = s_mach.codetools: Macro, codegen and code utility library
 Lance Gatlin <lance.gatlin@gmail.com>
-v1,01-Dec-2014
+v1,27-Dec-2014
 :blogpost-status: unpublished
 :blogpost-categories: s_mach, scala
 
 *UNDER CONSTRUCTION*
 
+image:https://travis-ci.org/S-Mach/s_mach.codetools.svg[Build Status, link="https://travis-ci.org/S-Mach/s_mach.codetools"]  image:https://coveralls.io/repos/S-Mach/s_mach.codetools/badge.png?branch=master[Test Coverage,link="https://coveralls.io/r/S-Mach/s_mach.codetools"] https://github.com/S-Mach/s_mach.codetools[Code] http://s-mach.github.io/s_mach.codetools/#s_mach.codetools.package[Scaladoc]
+
++s_mach.codetools+ is an open-source Scala macro, codegen and code utility
+library.
+
++s_mach.codetools+ currently provides:
+* +BlackboxHelper+ a wrapper trait that provides utility methods to assist in
+macro generation, specifically for generating default type-class implementations
+for product types
+** +BlackboxHelper.ProductType+ allows computing the field names and types of a
+product type based on matching apply/unapply methods in the type's companion
+object
+* +ReflectPrint+ a demonstration type-class which allows creating a string to
+recreate the value (and unapplied value) of an ADT
+* A reference implementation of a type-class blackbox macro generator
+(+ReflectPrintMacroBuilderImpl+) using +BlackboxHelper+ for the +ReflectPrint+
+type-class which can generate a +ReflectPrint+ implementation for any product
+type
+* Tests (+ReflectPrintTest+) that prove the output of the generated
++ReflectPrint+ for various common ADT patterns (See +testdata+)
+
+== Include in SBT
+1. Add to +build.sbt+
++
+[source,sbt,numbered]
+----
+libraryDependencies += "net.s_mach" %% "codetools" % "0.1-SNAPSHOT"
+----
+NOTE: +s_mach.codetools+ is currently only compiled for Scala 2.11 (though
+2.10.4 support can be added if there is interest)
+
+== Versioning
++s_mach.codetools+ uses semantic versioning (http://semver.org/).
++s_mach.codetools+ does not use the package private modifier. Instead, all code
+files outside of the +s_mach.codetools.impl+ and
++s_mach.codetools.reflectPrint.impl+ packages form the public interface and are
+governed by the rules of semantic versioning. Code files inside the
+impl packages may be used by downstream applications and
+libraries. However, no guarantees are made as to the stability or interface of
+code in the +s_mach.codetools.impl+ package between versions.

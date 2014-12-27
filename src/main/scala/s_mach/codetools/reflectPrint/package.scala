@@ -18,12 +18,10 @@
 */
 package s_mach.codetools
 
-import scala.language.experimental.macros
-import scala.reflect.macros.blackbox
-
 package object reflectPrint extends
   ReflectPrintValueTypeImplicits with
-  ReflectPrintCollectionImplicits {
+  ReflectPrintCollectionImplicits with
+  ReflectPrintTupleImplicits {
 
   implicit class PimpEverything[A](val self: A) extends AnyVal {
     def printApply(implicit
@@ -49,11 +47,6 @@ package object reflectPrint extends
     ) : String = p.printUnapply(self)
   }
 
-  def mkReflectPrint[A] : ReflectPrint[A] = macro mkReflectPrintMacro[A]
 
-  def mkReflectPrintMacro[A:c.WeakTypeTag](c: blackbox.Context) : c.Expr[ReflectPrint[A]] = {
-    val builder = ReflectPrintMacroBuilder(c)
-    // TODO: why is this cast necessary?
-    builder.build[A]().asInstanceOf[c.Expr[ReflectPrint[A]]]
-  }
+
 }

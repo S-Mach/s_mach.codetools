@@ -19,12 +19,15 @@
 package s_mach.codetools.reflectPrint
 
 /**
- * A case class for
- * @param multiLine FALSE to format strings as a single-line of text
- * @param namedParams TRUE to show named arguments in apply method
- * @param spacing TRUE to use spacing between words
- * @param indentString The string used to increase indentation
- * @param indent The string used to indent at the current level of indentation
+ * A case class for formatting the code printed by ReflectPrint implementations
+ *
+ * @param multiLine FALSE to format code as a single-line of text
+ * @param namedParams TRUE to show named arguments
+ * @param spacing TRUE to show spacing between terms
+ * @param indentString The string used to increase indentation (used only in
+ *                     multi-line mode)
+ * @param indent The string for the current level of indentation (used only in
+ *               multi-line mode)
  */
 case class ReflectPrintFormat(
   multiLine: Boolean = false,
@@ -33,8 +36,25 @@ case class ReflectPrintFormat(
   indentString: String = "",
   indent: String = ""
 ) {
+  /** A string that is a single space if spacing is enabled otherwise empty
+    * string */
   val space: String = if(spacing) " " else ""
+  /** A string that is the newline with indentation if multi-line is enabled
+    * otherwise empty string */
   val newLine: String = if(multiLine) s"\n$indent"  else ""
+  /**
+   * Start a new section with a leading new line and indentation. This format
+   * is copied with the indentation is increased one level and passed to the
+   * inner function. The output of the inner function is returned with a
+   * trailing new line with indentation. If multi-line mode is disabled,
+   * new lines and indentations are omitted.
+   *
+   * @param f function that accepts the inner indented format and returns a
+   *          string
+   * @return a string with leading newline and indentation, inner section and
+   * a trailing new line and indentation. If multi-line mode is disabled,
+   * new lines and indentations are omitted.
+   * */
   def newSection(f: ReflectPrintFormat => String) : String = {
     val innerFmt = copy(indent = indent + indentString)
     s"${innerFmt.newLine}${f(innerFmt)}$newLine"
@@ -50,29 +70,3 @@ object ReflectPrintFormat {
   )
 }
 
-/**
- * A type-class for printing Scala code from an instance
- */
-trait ReflectPrint[A] {
-  /** @return Scala code for creating an instance that matches the value of a */
-  def printApply(a: A)(implicit cfg:ReflectPrintFormat) : String
-  /** @return Scala code for creating the unapplied value of a */
-  def printUnapply(a: A)(implicit cfg:ReflectPrintFormat) : String
-}
-
-trait SimpleReflectPrint[A] extends ReflectPrint[A] {
-  def print(a: A)(implicit cfg: ReflectPrintFormat): String
-
-  override def printApply(a: A)(implicit cfg: ReflectPrintFormat): String = {
-    print(a)
-  }
-
-  override def printUnapply(a: A)(implicit cfg: ReflectPrintFormat): String = {
-    print(a)
-  }
-}
-
-class ValueTypeReflectPrint[A] extends SimpleReflectPrint[A] {
-  override def print(a: A)(implicit cfg: ReflectPrintFormat): String =
-    a.toString
-}

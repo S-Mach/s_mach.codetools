@@ -18,23 +18,24 @@
 */
 package s_mach.codetools.reflectPrint
 
+import s_mach.codetools.reflectPrint.impl._
 
 trait ReflectPrintValueTypeImplicits {
-  implicit object ReflectPrint_Boolean extends SimpleReflectPrint[Boolean] {
+  implicit object ReflectPrint_Boolean extends SimpleReflectPrintImpl[Boolean] {
     override def print(a: Boolean)(implicit cfg: ReflectPrintFormat): String = {
       a.toString
     }
   }
-  implicit object ReflectPrint_Byte extends ValueTypeReflectPrint[Byte]
-  implicit object ReflectPrint_Short extends ValueTypeReflectPrint[Short]
-  implicit object ReflectPrint_Int extends ValueTypeReflectPrint[Int]
-  implicit object ReflectPrint_Long extends SimpleReflectPrint[Long] {
+  implicit object ReflectPrint_Byte extends ValueTypeReflectPrintImpl[Byte]
+  implicit object ReflectPrint_Short extends ValueTypeReflectPrintImpl[Short]
+  implicit object ReflectPrint_Int extends ValueTypeReflectPrintImpl[Int]
+  implicit object ReflectPrint_Long extends SimpleReflectPrintImpl[Long] {
     override def print(a: Long)(implicit cfg: ReflectPrintFormat): String = {
       s"${a}l"
     }
   }
-  implicit object ReflectPrint_Float extends ValueTypeReflectPrint[Float]
-  implicit object ReflectPrint_Double extends ValueTypeReflectPrint[Double]
+  implicit object ReflectPrint_Float extends ValueTypeReflectPrintImpl[Float]
+  implicit object ReflectPrint_Double extends ValueTypeReflectPrintImpl[Double]
   implicit object ReflectPrint_BigInt extends ReflectPrint[BigInt] {
     override def printApply(
       a: BigInt
@@ -63,12 +64,12 @@ trait ReflectPrintValueTypeImplicits {
       cfg: ReflectPrintFormat
     ): String = s""""$a""""
   }
-  implicit object ReflectPrint_Char extends SimpleReflectPrint[Char] {
+  implicit object ReflectPrint_Char extends SimpleReflectPrintImpl[Char] {
     override def print(a: Char)(implicit cfg: ReflectPrintFormat): String = {
       s"'$a'"
     }
   }
-  implicit object ReflectPrint_String extends SimpleReflectPrint[String] {
+  implicit object ReflectPrint_String extends SimpleReflectPrintImpl[String] {
     override def print(a: String)(implicit cfg: ReflectPrintFormat): String = {
       import scala.reflect.runtime.universe._
       // Note: this takes care of escaping strings: http://stackoverflow.com/questions/9913971/scala-how-can-i-get-an-escaped-representation-of-a-string

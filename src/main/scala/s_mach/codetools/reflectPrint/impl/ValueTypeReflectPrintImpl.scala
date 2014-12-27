@@ -16,8 +16,11 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package s_mach.codetools
+package s_mach.codetools.reflectPrint.impl
 
-class ReflectToolboxTest {
-  // TODO:
+import s_mach.codetools.reflectPrint._
+
+class ValueTypeReflectPrintImpl[A] extends SimpleReflectPrintImpl[A] {
+  override def print(a: A)(implicit cfg: ReflectPrintFormat): String =
+    a.toString
 }

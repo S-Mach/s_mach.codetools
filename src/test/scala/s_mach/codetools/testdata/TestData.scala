@@ -22,25 +22,25 @@ import s_mach.codetools.reflectPrint._
 
 case class TestData(value: String)
 object TestData {
-  implicit val ReflectPrint_TestData = mkReflectPrint[TestData]
+  implicit val ReflectPrint_TestData = ReflectPrint.forProductType[TestData]
 }
 
 case class TestData2(value1: Int, value2: String, value3: Option[Double],value4: TestData)
 object TestData2 {
-  implicit val ReflectPrint_TestData = mkReflectPrint[TestData2]
+  implicit val ReflectPrint_TestData = ReflectPrint.forProductType[TestData2]
 }
 
 case class TestData3(value1: (Int,String,Double))
 object TestData3 {
-  implicit val ReflectPrint_TestData = mkReflectPrint[TestData3]
+  implicit val ReflectPrint_TestData = ReflectPrint.forProductType[TestData3]
 }
 
 case class TestData4(value1: Int, value2: TestData2, value3: List[Double], value4: TestData3)
 object TestData4 {
-  implicit val ReflectPrint_TestData = mkReflectPrint[TestData4]
+  implicit val ReflectPrint_TestData = ReflectPrint.forProductType[TestData4]
 }
 
-sealed trait TestEnum
+sealed trait TestEnum extends Product
 case object TestEnum1 extends TestEnum
 case object TestEnum2 extends TestEnum
 case object TestEnum3 extends TestEnum
@@ -48,13 +48,13 @@ object TestEnum {
   val values = List(TestEnum1,TestEnum2,TestEnum3)
   def apply(value1: String) : TestEnum = values.find(_.toString == value1).get
   def unapply(e:TestEnum) : Option[String] = Some(e.toString)
-  implicit val ReflectPrint_TestEnum = mkReflectPrint[TestEnum]
+  implicit val ReflectPrint_TestEnum = ReflectPrint.forProductType[TestEnum]
 }
 
-sealed trait TestBaseADT
+sealed trait TestBaseADT extends Product
 case class TestADT1(value1: String) extends TestBaseADT
 object TestADT1 {
-  implicit val ReflectPrint_TestADT1 = mkReflectPrint[TestADT1]
+  implicit val ReflectPrint_TestADT1 = ReflectPrint.forProductType[TestADT1]
 }
 case class TestADT2(value1: Double) extends TestBaseADT
 object TestBaseADT {
@@ -70,19 +70,19 @@ object TestBaseADT {
       case TestADT2(value2) => Some(("TestADT2",None,Some(value2)))
     }
   }
-  implicit val ReflectPrint_TestBaseADT = mkReflectPrint[TestBaseADT]
+  implicit val ReflectPrint_TestBaseADT = ReflectPrint.forProductType[TestBaseADT]
 }
 
 case class TestData5(value1: TestBaseADT, value2: TestEnum)
 
 object TestData5 {
   implicit val ReflectPrint_TestData5 =
-    mkReflectPrint[TestData5]
+    ReflectPrint.forProductType[TestData5]
 }
 
 case class TestData6[A <: TestBaseADT](value1: A)
 
 object TestData6 {
-  implicit def mkReflectPrint_Testdata6[A <: TestBaseADT](implicit aPrintable:ReflectPrint[A]) : ReflectPrint[TestData6[A]] =
-    mkReflectPrint[TestData6[A]]
+  implicit def ReflectPrint_Testdata6[A <: TestBaseADT](implicit aPrintable:ReflectPrint[A]) : ReflectPrint[TestData6[A]] =
+    ReflectPrint.forProductType[TestData6[A]]
 }

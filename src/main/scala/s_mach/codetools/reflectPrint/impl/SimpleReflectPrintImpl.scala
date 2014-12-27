@@ -16,19 +16,18 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package s_mach.codetools.reflectPrint
+package s_mach.codetools.reflectPrint.impl
 
-import s_mach.codetools.reflectPrint.impl.ReflectPrintMacroBuilderImpl
+import s_mach.codetools.reflectPrint._
 
-import scala.reflect.macros.blackbox
+trait SimpleReflectPrintImpl[A] extends ReflectPrint[A] {
+  def print(a: A)(implicit cfg: ReflectPrintFormat): String
 
-trait ReflectPrintMacroBuilder {
-  val c:blackbox.Context
-  def build[A: c.WeakTypeTag]() : c.Expr[ReflectPrint[A]]
+  override def printApply(a: A)(implicit cfg: ReflectPrintFormat): String = {
+    print(a)
+  }
+
+  override def printUnapply(a: A)(implicit cfg: ReflectPrintFormat): String = {
+    print(a)
+  }
 }
-
-object ReflectPrintMacroBuilder {
-  def apply(c:blackbox.Context) : ReflectPrintMacroBuilder =
-    new ReflectPrintMacroBuilderImpl(c)
-}
-

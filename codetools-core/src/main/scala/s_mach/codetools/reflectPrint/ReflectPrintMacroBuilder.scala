@@ -16,15 +16,20 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package s_mach.codetools
+package s_mach.codetools.reflectPrint
 
-import s_mach.codetools.reflectPrint.ReflectPrint
-import s_mach.codetools.reflectPrint._
+import s_mach.codetools.impl.ReflectPrintMacroBuilderImpl
 
-package object testdata {
-  implicit def mkPrintable_Tuple3[A,B,C](implicit
-    aPrintable:ReflectPrint[A],
-    bPrintable:ReflectPrint[B],
-    cPrintable:ReflectPrint[C]
-  ) = mkReflectPrint[(A,B,C)]
+import scala.language.experimental.macros
+import scala.reflect.macros.blackbox
+
+trait ReflectPrintMacroBuilder {
+  val c:blackbox.Context
+  def build[A: c.WeakTypeTag]() : c.Expr[ReflectPrint[A]]
 }
+
+object ReflectPrintMacroBuilder {
+  def apply(c:blackbox.Context) : ReflectPrintMacroBuilder =
+    new ReflectPrintMacroBuilderImpl(c)
+}
+

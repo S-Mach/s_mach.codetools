@@ -20,10 +20,11 @@ package s_mach.codetools.reflectPrint
 
 import scala.language.higherKinds
 import scala.reflect.ClassTag
+import s_mach.codetools.reflectPrint.impl.SimpleReflectPrintImpl
 
 trait ReflectPrintCollectionImplicits {
   implicit def mkPrintable_Option[A](implicit pA:ReflectPrint[A]) =
-    new SimpleReflectPrint[Option[A]] {
+    new SimpleReflectPrintImpl[Option[A]] {
       def print(oa: Option[A])(implicit fmt: ReflectPrintFormat) : String = {
         oa match {
           case Some(a) => s"Some(${fmt.newSection(pA.printApply(a)(_))})"
@@ -35,7 +36,7 @@ trait ReflectPrintCollectionImplicits {
   implicit def mkPrintable_Traversable[A,M[AA] <: Traversable[AA]](implicit
     pA:ReflectPrint[A],
     mClassTag:ClassTag[M[_]]
-  ) =  new SimpleReflectPrint[M[A]] {
+  ) =  new SimpleReflectPrintImpl[M[A]] {
     val className = mClassTag.runtimeClass.getSimpleName
     override def print(
       ma: M[A]

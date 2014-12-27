@@ -30,7 +30,8 @@ trait BlackboxHelper extends BlackboxHelperImpl { self =>
     Impl.logIssues(zomIssue)
 
   /** @return If Result is success the value of the Result. If Result is
-    *         failure, c.abort is invoked ending the macro */
+    *         failure, c.abort is invoked ending the macro. All issues are
+    *         logged to the Context */
   @inline def abortIfFailure[A,X](r:Result[A]): A =
     Impl.abortIfFailure(r)
 

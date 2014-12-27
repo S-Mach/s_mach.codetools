@@ -26,15 +26,20 @@ trait ReflectPrintValueTypeImplicits {
       a.toString
     }
   }
-  implicit object ReflectPrint_Byte extends ValueTypeReflectPrintImpl[Byte]
-  implicit object ReflectPrint_Short extends ValueTypeReflectPrintImpl[Short]
+  // TODO: removed these for now since doesn't appear to be possible to create byte of short literals in vanilla Scala as of 2.11
+//  implicit object ReflectPrint_Byte extends ValueTypeReflectPrintImpl[Byte]
+//  implicit object ReflectPrint_Short extends ValueTypeReflectPrintImpl[Short]
   implicit object ReflectPrint_Int extends ValueTypeReflectPrintImpl[Int]
   implicit object ReflectPrint_Long extends SimpleReflectPrintImpl[Long] {
     override def print(a: Long)(implicit cfg: ReflectPrintFormat): String = {
       s"${a}l"
     }
   }
-  implicit object ReflectPrint_Float extends ValueTypeReflectPrintImpl[Float]
+  implicit object ReflectPrint_Float extends SimpleReflectPrintImpl[Float] {
+    override def print(a: Float)(implicit cfg: ReflectPrintFormat): String = {
+      s"${a}f"
+    }
+  }
   implicit object ReflectPrint_Double extends ValueTypeReflectPrintImpl[Double]
   implicit object ReflectPrint_BigInt extends ReflectPrint[BigInt] {
     override def printApply(

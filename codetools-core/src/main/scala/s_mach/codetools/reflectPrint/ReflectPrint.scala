@@ -38,7 +38,7 @@ object ReflectPrint {
   def macroForProductType[A<:Product:c.WeakTypeTag](c: blackbox.Context) : c.Expr[ReflectPrint[A]] = {
     val builder = ReflectPrintMacroBuilder(c)
     // Note: cast is necessary since compiler can't infer that builder.c is same
-    // instance as c in above
+    // instance as c above
     builder.build[A]().asInstanceOf[c.Expr[ReflectPrint[A]]]
   }
 }

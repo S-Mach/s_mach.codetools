@@ -20,20 +20,14 @@ package s_mach.codetools.impl
 
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
-import s_mach.codetools.{Result, IssueLevel, Issue, BlackboxToolbox}
+import s_mach.codetools.{Result, BlackboxHelper}
 import s_mach.codetools.reflectPrint._
 
 class ReflectPrintMacroBuilderImpl(val c: blackbox.Context) extends
   ReflectPrintMacroBuilder with
-  BlackboxToolbox {
+  BlackboxHelper {
   import c.universe._
 
-  def showIssues(zomIssue: List[Issue]) = {
-    zomIssue.foreach {
-      case Result.Error(message) => c.error(c.enclosingPosition,message)
-      case Result.Warning(message) => c.error(c.enclosingPosition,message)
-    }
-  }
   def build[A: c.WeakTypeTag]() : c.Expr[ReflectPrint[A]] = {
     val aType = c.weakTypeOf[A]
     val isTuple = isTupleType(aType)
@@ -48,19 +42,7 @@ class ReflectPrintMacroBuilderImpl(val c: blackbox.Context) extends
 
     val printableTypeConstructor = typeOf[ReflectPrint[_]].typeConstructor
 
-    val productType : ProductType = ProductType(aType).fold(
-      isSuccess = { s:Result.Success[ProductType] =>
-        showIssues(s.zomIssue)
-        s.value
-      },
-      isFailure = { f =>
-        showIssues(f.zomIssue)
-        c.abort(
-          c.enclosingPosition,
-          s"Failed to create ProductType for $aType"
-        )
-      }
-    )
+    val productType : ProductType = abortIfFailure(ProductType(aType))
 
     val lcs = ('a' to 'z').map(_.toString)
 
@@ -72,19 +54,8 @@ class ReflectPrintMacroBuilderImpl(val c: blackbox.Context) extends
     val fields = oomField.map { case (rpFieldName,field) =>
       val innerReflectPrintType = appliedType(printableTypeConstructor, List(field._type))
       val innerReflectPrint =
-        inferImplicit(innerReflectPrintType).fold(
-          isSuccess = { s:Result.Success[c.Tree] =>
-            showIssues(s.zomIssue)
-            s.value
-          },
-          isFailure = { f =>
-            showIssues(f.zomIssue)
-            c.abort(
-              c.enclosingPosition,
-              s"Failed to create ProductType for $aType"
-            )
-          }
-        )
+        abortIfFailure(inferImplicit(innerReflectPrintType))
+
       q"val $rpFieldName = $innerReflectPrint"
     }
 

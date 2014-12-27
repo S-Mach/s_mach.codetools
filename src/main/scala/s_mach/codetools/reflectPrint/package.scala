@@ -24,6 +24,8 @@ package object reflectPrint extends
   ReflectPrintTupleImplicits {
 
   implicit class PimpEverything[A](val self: A) extends AnyVal {
+    /** @return a string containing the Scala code necessary to create an
+      *         instance of self with the same value */
     def printApply(implicit
       p:ReflectPrint[A],
       fmt:ReflectPrintFormat = ReflectPrintFormat.std
@@ -41,12 +43,13 @@ package object reflectPrint extends
 //        indentString = indentString
 //      )
 //    )
+    /** @return a string containing the Scala code necessary to create either
+      *         the value of self or the tuple value containing the fields of
+      *         self */
     def printUnapply(implicit
       p:ReflectPrint[A],
       fmt:ReflectPrintFormat = ReflectPrintFormat.std
     ) : String = p.printUnapply(self)
   }
-
-
 
 }

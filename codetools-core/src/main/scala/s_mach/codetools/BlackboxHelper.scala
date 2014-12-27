@@ -18,12 +18,21 @@
 */
 package s_mach.codetools
 
-import s_mach.codetools.impl.BlackboxToolboxImpl
+import s_mach.codetools.impl.BlackboxHelperImpl
 
 import scala.reflect.macros.blackbox
 
-trait BlackboxToolbox extends BlackboxToolboxImpl { self =>
+trait BlackboxHelper extends BlackboxHelperImpl { self =>
   val c:blackbox.Context
+
+  /** Log all issues to the Context */
+  @inline def logIssues(zomIssue: List[Result.Issue]) : Unit =
+    Impl.logIssues(zomIssue)
+
+  /** @return If Result is success the value of the Result. If Result is
+    *         failure, c.abort is invoked ending the macro */
+  @inline def abortIfFailure[A,X](r:Result[A]): A =
+    Impl.abortIfFailure(r)
 
   /**
    * @return if the method exists, the method symbol otherwise an error message
@@ -116,7 +125,9 @@ trait BlackboxToolbox extends BlackboxToolboxImpl { self =>
    *              unapply methods
    * @return if successful, Some(product type) otherwise None
    */
-  @inline def calcProductTypeFields(aType: c.Type): Result[List[(String, c.Type)]] =
+  @inline def calcProductTypeFields(
+    aType: c.Type
+  ): Result[List[(String, c.Type)]] =
     Impl.calcProductTypeFields(aType)
 
   /**

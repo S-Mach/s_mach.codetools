@@ -22,10 +22,37 @@ import s_mach.codetools.Result
 
 import scala.reflect.macros.blackbox
 
-trait BlackboxToolboxImpl {
+trait BlackboxHelperImpl {
   val c:blackbox.Context
 
   object Impl {
+
+    def abortIfFailure[A,X](r: Result[A]) : A = {
+      r.fold(
+        isSuccess = { s:Result.Success[A] =>
+          logIssues(r.zomIssue)
+          s.value
+        },
+        isFailure = { f:Result.Failure =>
+          val (zomIssue,lastError) =
+            r.zomIssue.splitAt(r.zomIssue.lastIndexWhere(_.isError))
+          logIssues(zomIssue)
+          c.abort(
+            c.enclosingPosition,
+            lastError.head.message
+          )
+        }
+      )
+    }
+
+    def logIssues(zomIssue: List[Result.Issue]) = {
+      zomIssue.foreach {
+        case Result.Error(message) => c.error(c.enclosingPosition,message)
+        case Result.Warning(message) => c.warning(c.enclosingPosition,message)
+        case Result.Info(message) => c.info(c.enclosingPosition,message,true)
+      }
+    }
+
     def inferImplicit(aType:c.Type) : Result[c.Tree] = {
       val result = c.inferImplicitValue(aType)
       if (result.isEmpty) {

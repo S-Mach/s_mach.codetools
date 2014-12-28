@@ -42,7 +42,7 @@ val publishSettings = Seq(
 val defaultSettings = Defaults.coreDefaultSettings ++ publishSettings ++ Seq(
   scalaVersion := "2.11.1",
   organization := "net.s_mach",
-  version := "1.0.0",
+  version := "1.0.1",
   scalacOptions ++= Seq(
     "-feature",
     "-unchecked",

@@ -48,7 +48,7 @@ class ReflectPrintMacroBuilderImpl(val c: blackbox.Context) extends
 
     val oomField =
       productType.oomField.zip(lcs).map { case (field,lc) =>
-        (TermName(s"$_{lc}ReflectPrint"), field)
+        (TermName(s"_${lc}ReflectPrint"), field)
       }
 
     val fields = oomField.map { case (rpFieldName,field) =>

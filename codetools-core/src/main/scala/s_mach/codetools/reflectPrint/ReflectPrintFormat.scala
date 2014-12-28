@@ -62,11 +62,13 @@ case class ReflectPrintFormat(
 }
 
 object ReflectPrintFormat {
-  val std = ReflectPrintFormat()
-  val verbose = ReflectPrintFormat(
-    multiLine = true,
-    spacing = true,
-    indentString = " "
-  )
+  object Implicits {
+    implicit val std = ReflectPrintFormat()
+    implicit val verbose = ReflectPrintFormat(
+      multiLine = true,
+      spacing = true,
+      indentString = " "
+    )
+  }
 }
 

@@ -26,9 +26,17 @@ import scala.reflect.macros.blackbox
  */
 trait ReflectPrint[A] {
   /** @return Scala code for creating an instance that matches the value of a */
-  def printApply(a: A)(implicit fmt:ReflectPrintFormat) : String
+  def printApply(
+    a: A
+  )(implicit
+    fmt:ReflectPrintFormat = ReflectPrintFormat.Implicits.std
+  ) : String
   /** @return Scala code for creating the unapplied value of a */
-  def printUnapply(a: A)(implicit fmt:ReflectPrintFormat) : String
+  def printUnapply(
+    a: A
+  )(implicit
+    fmt:ReflectPrintFormat = ReflectPrintFormat.Implicits.std
+  ) : String
 }
 
 object ReflectPrint {

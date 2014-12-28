@@ -28,7 +28,7 @@ package object reflectPrint extends
       *         instance of self with the same value */
     def printApply(implicit
       p:ReflectPrint[A],
-      fmt:ReflectPrintFormat = ReflectPrintFormat.std
+      fmt:ReflectPrintFormat = ReflectPrintFormat.Implicits.std
     ) : String = p.printApply(self)
 //    def printApplyFmt(
 //      multiLine: Boolean = false,
@@ -48,7 +48,7 @@ package object reflectPrint extends
       *         self */
     def printUnapply(implicit
       p:ReflectPrint[A],
-      fmt:ReflectPrintFormat = ReflectPrintFormat.std
+      fmt:ReflectPrintFormat = ReflectPrintFormat.Implicits.std
     ) : String = p.printUnapply(self)
   }
 

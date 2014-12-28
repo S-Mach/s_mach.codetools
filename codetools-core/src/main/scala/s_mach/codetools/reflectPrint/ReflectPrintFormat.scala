@@ -67,7 +67,7 @@ object ReflectPrintFormat {
     implicit val verbose = ReflectPrintFormat(
       multiLine = true,
       spacing = true,
-      indentString = " "
+      indentString = "  "
     )
   }
 }

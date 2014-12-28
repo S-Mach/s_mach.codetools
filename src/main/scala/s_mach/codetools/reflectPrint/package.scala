@@ -23,7 +23,7 @@ package object reflectPrint extends
   ReflectPrintCollectionImplicits with
   ReflectPrintTupleImplicits {
 
-  implicit class PimpEverything[A](val self: A) extends AnyVal {
+  implicit class ReflectPrint_PimpEverything[A](val self: A) extends AnyVal {
     /** @return a string containing the Scala code necessary to create an
       *         instance of self with the same value */
     def printApply(implicit

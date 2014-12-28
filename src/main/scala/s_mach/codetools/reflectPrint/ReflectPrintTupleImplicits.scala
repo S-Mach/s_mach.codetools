@@ -104,7 +104,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I)]
 
 
-  implicit def mkTuple10Diff[A,B,C,D,E,F,G,H,I,J](implicit
+  implicit def mkTuple10ReflectPrint[A,B,C,D,E,F,G,H,I,J](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -119,7 +119,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J)]
 
 
-  implicit def mkTuple11Diff[A,B,C,D,E,F,G,H,I,J,K](implicit
+  implicit def mkTuple11ReflectPrint[A,B,C,D,E,F,G,H,I,J,K](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -135,7 +135,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J,K)]
 
 
-  implicit def mkTuple12Diff[A,B,C,D,E,F,G,H,I,J,K,L](implicit
+  implicit def mkTuple12ReflectPrint[A,B,C,D,E,F,G,H,I,J,K,L](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -152,7 +152,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J,K,L)]
 
 
-  implicit def mkTuple13Diff[A,B,C,D,E,F,G,H,I,J,K,L,M](implicit
+  implicit def mkTuple13ReflectPrint[A,B,C,D,E,F,G,H,I,J,K,L,M](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -170,7 +170,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J,K,L,M)]
 
 
-  implicit def mkTuple14Diff[A,B,C,D,E,F,G,H,I,J,K,L,M,N](implicit
+  implicit def mkTuple14ReflectPrint[A,B,C,D,E,F,G,H,I,J,K,L,M,N](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -189,7 +189,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J,K,L,M,N)]
 
 
-  implicit def mkTuple15Diff[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O](implicit
+  implicit def mkTuple15ReflectPrint[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -209,7 +209,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O)]
 
 
-  implicit def mkTuple16Diff[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P](implicit
+  implicit def mkTuple16ReflectPrint[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -230,7 +230,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P)]
 
 
-  implicit def mkTuple17Diff[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q](implicit
+  implicit def mkTuple17ReflectPrint[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -252,7 +252,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q)]
 
 
-  implicit def mkTuple18Diff[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R](implicit
+  implicit def mkTuple18ReflectPrint[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -275,7 +275,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R)]
 
 
-  implicit def mkTuple19Diff[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S](implicit
+  implicit def mkTuple19ReflectPrint[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -299,7 +299,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S)]
 
 
-  implicit def mkTuple20Diff[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T](implicit
+  implicit def mkTuple20ReflectPrint[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -324,7 +324,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T)]
 
 
-  implicit def mkTuple21Diff[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U](implicit
+  implicit def mkTuple21ReflectPrint[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],
@@ -350,7 +350,7 @@ trait ReflectPrintTupleImplicits {
     ReflectPrint.forProductType[(A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U)]
 
 
-  implicit def mkTuple22Diff[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V](implicit
+  implicit def mkTuple22ReflectPrint[A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V](implicit
     aReflectPrint: ReflectPrint[A],
     bReflectPrint: ReflectPrint[B],
     cReflectPrint: ReflectPrint[C],

@@ -1,7 +1,6 @@
 package s_mach.codetools.impl
 
 import s_mach.codetools.reflectPrint._
-import s_mach.codetools.reflectPrint.impl.SimpleReflectPrintImpl
 
 class ReflectPrintOption[A](implicit
   pA:ReflectPrint[A]

@@ -3,7 +3,6 @@ package s_mach.codetools.impl
 import scala.language.higherKinds
 import scala.reflect.ClassTag
 import s_mach.codetools.reflectPrint.{ReflectPrint, ReflectPrintFormat}
-import s_mach.codetools.reflectPrint.impl.SimpleReflectPrintImpl
 
 class ReflectPrintTraversable[A, M[AA] <: Traversable[AA]](implicit
   pA:ReflectPrint[A],

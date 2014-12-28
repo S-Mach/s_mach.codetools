@@ -14,8 +14,8 @@ library.
 +s_mach.codetools+ currently provides:
 
 * +BlackboxHelper+: a wrapper trait that provides utility methods to assist in
-macro generation, specifically for generating default type-class implementations
-for product types
+macro generation, specifically for generating type-class implementations for
+product types
 ** +BlackboxHelper.ProductType+: a case class that can compute the field names
 and types of a product type. Works with all case classes, tuple types and any
 other types whose companion object contains a matching apply/unapply method
@@ -27,9 +27,9 @@ necessary for recreating an instance with the same value (See
 blackbox macro generator that uses +BlackboxHelper+. The macro implementation
 can generate a +ReflectPrint+ implementation for any product type (i.e. case
 class or tuple type)
-* +ReflectPrintTest+: that prove the output of the generated +ReflectPrint+ for
-various common ADT patterns (See +testdata+) in lieu of direct testing of
-+BlackboxHelper+ for now.
+* +ReflectPrintTest+: tests for the generated +ReflectPrint+ for various common
+ADT patterns (See +testdata+) in lieu of direct testing of +BlackboxHelper+
+since there is currently no blackbox.Context mock available.
 
 == Include in SBT
 1. Add to +build.sbt+
@@ -44,10 +44,9 @@ NOTE: +s_mach.codetools+ is currently only compiled for Scala 2.11 (though
 == Versioning
 +s_mach.codetools+ uses semantic versioning (http://semver.org/).
 +s_mach.codetools+ does not use the package private modifier. Instead, all code
-files outside of the +s_mach.codetools.impl+ and
-+s_mach.codetools.reflectPrint.impl+ packages form the public interface and are
-governed by the rules of semantic versioning. Code files inside the
-impl packages may be used by downstream applications and
+files outside of the +s_mach.codetools.impl+ package form the public interface
+and are governed by the rules of semantic versioning. Code files inside the
++s_mach.codetools.impl+ package may be used by downstream applications and
 libraries. However, no guarantees are made as to the stability or interface of
 code in the +s_mach.codetools.impl+ package between versions.
 

@@ -30,19 +30,7 @@ package object reflectPrint extends
       p:ReflectPrint[A],
       fmt:ReflectPrintFormat = ReflectPrintFormat.Implicits.std
     ) : String = p.printApply(self)
-//    def printApplyFmt(
-//      multiLine: Boolean = false,
-//      namedParams: Boolean = true,
-//      spacing: Boolean = false,
-//      indentString: String = ""
-//    )(implicit p:ReflectPrint[A]) : String = p.printApply(self)(
-//      ReflectPrintFormat(
-//        multiLine = multiLine,
-//        namedParams = namedParams,
-//        spacing = spacing,
-//        indentString = indentString
-//      )
-//    )
+
     /** @return a string containing the Scala code necessary to create either
       *         the value of self or the tuple value containing the fields of
       *         self */

@@ -18,7 +18,7 @@
 */
 package s_mach.codetools.reflectPrint
 
-import s_mach.codetools.reflectPrint.impl._
+import s_mach.codetools.impl._
 
 trait ReflectPrintValueTypeImplicits {
   implicit object ReflectPrint_Boolean extends SimpleReflectPrintImpl[Boolean] {

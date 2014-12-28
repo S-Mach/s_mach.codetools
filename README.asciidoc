@@ -22,7 +22,7 @@ other types whose companion object contains a matching apply/unapply method
 pair. (See +BlackboxHelper.ProductType+ for details)
 * +ReflectPrint+: a demonstration type-class which can create the Scala code
 necessary for recreating an instance with the same value (See
-+reflectPrint.printApply+)
++reflectPrint.printApply+).
 * +ReflectPrintMacroBuilderImpl+: a reference implementation of a type-class
 blackbox macro generator that uses +BlackboxHelper+. The macro implementation
 can generate a +ReflectPrint+ implementation for any product type (i.e. case
@@ -52,6 +52,13 @@ code in the +s_mach.codetools.impl+ package between versions.
 
 == Example: ReflectPrint
 ----
+Welcome to Scala version 2.11.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_72).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
 import s_mach.codetools.reflectPrint._
 
 case class Movie(
@@ -97,6 +104,26 @@ val a1 = Actor(n1,56,Set(m1,m2))
 val a2 = Actor(n2,47,Set(m3,m4))
 val a3 = Actor(n3,37,Set.empty)
 
+// Exiting paste mode, now interpreting.
+
+import s_mach.codetools.reflectPrint._
+defined class Movie
+defined object Movie
+defined class Name
+defined object Name
+defined class Actor
+defined object Actor
+n1: Name = Name(Gary,Some(Freakn),Oldman)
+n2: Name = Name(Guy,None,Pearce)
+n3: Name = Name(Lance,None,Gatlin)
+m1: Movie = Movie(The Professional,1994)
+m2: Movie = Movie(The Fifth Element,1997)
+m3: Movie = Movie(Memento,1994)
+m4: Movie = Movie(Prometheus,2000)
+a1: Actor = Actor(Name(Gary,Some(Freakn),Oldman),56,Set(Movie(The Professional,1994), Movie(The Fifth Element,1997)))
+a2: Actor = Actor(Name(Guy,None,Pearce),47,Set(Movie(Memento,1994), Movie(Prometheus,2000)))
+a3: Actor = Actor(Name(Lance,None,Gatlin),37,Set())
+
 scala> a1.printApply
 res0: String = Actor(name=Name(firstName="Gary",middleName=Some("Freakn"),lastName="Oldman"),age=56,movies=Set(Movie(name="The Professional",year=1994),Movie(name="The Fifth Element",year=1997)))
 
@@ -116,10 +143,10 @@ scala> ualt1 == Actor.unapply(a1).get
 res3: Boolean = true
 
 scala> import ReflectPrintFormat.Implicits.verbose
-import ReflectPrintFormat.Implicit.verbose
+import ReflectPrintFormat.Implicits.verbose
 
 scala> a2.printApply
-res2: String =
+res4: String =
 Actor(
   name = Name(
     firstName = "Guy",
@@ -140,7 +167,7 @@ Actor(
 )
 
 scala> a3.printApply
-res3: String =
+res5: String =
 Actor(
  name = Name(
   firstName = "Lance",

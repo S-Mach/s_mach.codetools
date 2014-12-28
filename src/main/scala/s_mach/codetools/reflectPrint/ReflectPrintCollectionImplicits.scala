@@ -20,37 +20,14 @@ package s_mach.codetools.reflectPrint
 
 import scala.language.higherKinds
 import scala.reflect.ClassTag
-import s_mach.codetools.reflectPrint.impl.SimpleReflectPrintImpl
+import s_mach.codetools.impl.{ReflectPrintTraversable, ReflectPrintOption}
 
 trait ReflectPrintCollectionImplicits {
-  implicit def mkPrintable_Option[A](implicit pA:ReflectPrint[A]) =
-    new SimpleReflectPrintImpl[Option[A]] {
-      def print(oa: Option[A])(implicit fmt: ReflectPrintFormat) : String = {
-        oa match {
-          case Some(a) => s"Some(${fmt.newSection(pA.printApply(a)(_))})"
-          case None => "None"
-        }
-      }
-    }
+  implicit def mkReflectPrint_Option[A](implicit pA:ReflectPrint[A]) =
+    new ReflectPrintOption[A]
 
-  implicit def mkPrintable_Traversable[A,M[AA] <: Traversable[AA]](implicit
+  implicit def mkReflectPrint_Traversable[A,M[AA] <: Traversable[AA]](implicit
     pA:ReflectPrint[A],
     mClassTag:ClassTag[M[_]]
-  ) =  new SimpleReflectPrintImpl[M[A]] {
-    val className = mClassTag.runtimeClass.getSimpleName
-    override def print(
-      ma: M[A]
-    )(implicit
-      fmt: ReflectPrintFormat
-    ): String =
-    {
-      if(ma.isEmpty) {
-        s"$className.empty"
-      } else {
-        s"$className(${fmt.newSection { sectionFmt =>
-          ma.map(a => pA.printApply(a)(sectionFmt)).mkString(",")
-        }})"
-      }
-    }
-  }
+  ) =  new ReflectPrintTraversable[A,M]
 }

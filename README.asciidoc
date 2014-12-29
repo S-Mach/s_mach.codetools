@@ -84,7 +84,7 @@ object A {
 }
 ----
 * The first apply method's type signature = +Int :: String :: Nil+
-* The unapply method's type signature = +((Int,String) :: Nil) ::: (Int :: String :: Nil)+
+* Possible unapply method's type signatures = +((Int,String) :: Nil) ::: (Int :: String :: Nil)+
 * Product type fields = +("i",Int) :: ("s",String) :: Nil+
 
 .Example 2:
@@ -93,12 +93,12 @@ class B(...) { ... }
 object B {
   def apply(tuple: (String,Int)) : A = ???
   def apply(i: Int, s: String) : A = ???
-  def unapply(b: B) : Option[(Int,String)] = ???
+  def unapply(b: B) : Option[(String,Int)] = ???
 }
 ----
-* The first apply method's type signature = +List((String,Int))+
-* The unapply method's type signature = +List(List((String,Int)),List(String,Int))+
-* Product type fields = +List(tuple: (String, Int))+
+* The first apply method's type signature = +(String,Int) :: Nil+
+* Possible unapply method's type signatures = +((String,Int) :: Nil) ::: (String :: Int :: Nil)+
+* Product type fields = +("tuple",(String,Int)) :: Nil+
 
 .Example 3:
 ----

@@ -14,69 +14,10 @@ trait ProductTypeHelper { self =>
   val showDebug: Boolean = false
 
   /**
-   * Try to compute the product type fields for a type.
-   *
-   * The product type fields are computed by finding the first unapply/apply
-   * method pair in the type's companion object with matching type signatures.
-   * The type signature of apply methods is equal to the sequence of the types
-   * of its arguments. Unapply methods may have one or two type signatures based
-   * on its return type. First, the inner type parameter of the Option return
-   * type is extracted. If the inner type parameter is a tuple type, then both
-   * the tuple type and the list of tuple type parameters form possible type
-   * signatures. Otherwise, if the inner type parameter is not a tuple type then
-   * the type signature is equal to the single type parameter. Once an
-   * apply/unapply match is made, the symbols of the apply method's argument
-   * list are returned as  the product type fields for the type. For tuple types
-   * and case classes, this will be the list of it's fields.
-   *
-   * Example1:
-   * class A(...) { ... }
-   * object A {
-   *   def apply(i: Int, s: String) : A = ???
-   *   def apply(i: Int, s: String, f: Float) : A = ???
-   *   def unapply(a: A) : Option[(Int,String)] = ???
-   * }
-   * The first apply method's type signature = List(Int,String)
-   * The unapply method's type signature = List(List((Int,String)),Int,String)
-   * Product type fields = List(i:Int,s:String)
-   *
-   * Example2:
-   * class B(...) { ... }
-   * object B {
-   *   def apply(tuple: (String,Int)) : A = ???
-   *   def apply(i: Int, s: String) : A = ???
-   *   def unapply(b: B) : Option[(Int,String)] = ???
-   * }
-   * The first apply method's type signature = List((String,Int))
-   * The unapply method's type signature = List(List((String,Int)),
-   * List(String,Int))
-   * Product type fields = List(tuple: (String, Int))
-   *
-   * Example3:
-   * class Enum(...) { ... }
-   * object Enum {
-   *   def apply(value: String) : A = ???
-   *   def unapply(e: Enum) : Option[String] = ???
-   * }
-   * The first apply method's type signature = List(String)
-   * The unapply method's type signature = List(List(String))
-   * Product type fields = List(value: String)
-   *
-   * Example4:
-   * case class CaseClass(i: Int, s: String)
-   * The first apply method's type signature = List(Int,String)
-   * The unapply method's type signature = List(List((Int,String)),
-   * List(Int,String))
-   * Product type fields = List(i:Int,s:String)
-   *
-   * Example5:
-   * class Tuple2[T1,T2](val _1: T1,val _2 : T2)
-   * The first apply method's type signature = List(T1,T2)
-   * The unapply method's type signature = List(T1,T2)
-   * Product type fields = List(_1:T1,_2:T2)
-   *
-   * If no product type can be computed, None is returned and an error message
-   * is logged to logger
+   * Try to compute the product type fields for a type by finding the first
+   * unapply/apply method pair in the type's companion object with matching type
+   * signatures. If no product type can be computed, Failure is returned with
+   * an error message.
    *
    * @param aType type whose companion object should be searched for apply and
    *              unapply methods

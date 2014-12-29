@@ -15,7 +15,7 @@ library.
 warnings and other issues in addition to storing failure or success. Returned
 by most +BlackboxHelper+ methods.
 * +BlackboxHelper+: a wrapper trait that provides utility types and methods to
-assist in macro generation, specifically for generating type-class
+assist in macro generation, specifically for generating type-class.
 implementations for product types
 ** +BlackboxHelper.ProductType+: a case class for storing the matching
 apply/unapply methods and field names of a product type. Works for all case
@@ -72,7 +72,7 @@ for the unapply method. Otherwise, if the inner type parameter is not a tuple ty
 then the type signature is equal to the single type parameter. Once an
 apply/unapply match is made, the symbols of the apply method's argument list are
 returned as  the product type fields for the type. For tuple types and case
-classes, this will be the list of it's fields.
+classes, this will be the list of its fields.
 
 .Example 1:
 ----
@@ -82,7 +82,7 @@ object A {
     def apply(i: Int, s: String, f: Float) : A = ???
     def unapply(a: A) : Option[(Int,String)] = ???
 }
----
+----
 The first apply method's type signature = +List(Int,String)+
 The unapply method's type signature = +List(List((Int,String)),Int,String)+
 Product type fields = +List(i:Int,s:String)+

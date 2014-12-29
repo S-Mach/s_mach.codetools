@@ -83,8 +83,8 @@ object A {
     def unapply(a: A) : Option[(Int,String)] = ???
 }
 ----
-* The first apply method's type signature = +List(Int,String)+
-* The unapply method's type signature = +List(List( (Int,String) ),Int,String)+
+* The first apply method's type signature = +Int :: String :: Nil+
+* The unapply method's type signature = +((Int,String) :: Nil) :: Int :: String :: Nil+
 * Product type fields = +List(i:Int,s:String)+
 
 .Example 2:

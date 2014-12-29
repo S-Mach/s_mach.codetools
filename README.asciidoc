@@ -83,9 +83,9 @@ object A {
     def unapply(a: A) : Option[(Int,String)] = ???
 }
 ----
-The first apply method's type signature = +List(Int,String)+
-The unapply method's type signature = +List(List((Int,String)),Int,String)+
-Product type fields = +List(i:Int,s:String)+
+* The first apply method's type signature = +List(Int,String)+
+* The unapply method's type signature = +List(List((Int,String)),Int,String)+
+* Product type fields = +List(i:Int,s:String)+
 
 .Example 2:
 ----
@@ -96,9 +96,9 @@ object B {
   def unapply(b: B) : Option[(Int,String)] = ???
 }
 ----
-The first apply method's type signature = +List((String,Int))+
-The unapply method's type signature = +List(List((String,Int)),List(String,Int))+
-Product type fields = +List(tuple: (String, Int))+
+* The first apply method's type signature = +List((String,Int))+
+* The unapply method's type signature = +List(List((String,Int)),List(String,Int))+
+* Product type fields = +List(tuple: (String, Int))+
 
 .Example 3:
 ----
@@ -108,25 +108,25 @@ object Enum {
   def unapply(e: Enum) : Option[String] = ???
 }
 ----
-The first apply method's type signature = +List(String)+
-The unapply method's type signature = +List(List(String))+
-Product type fields = +List(value: String)+
+* The first apply method's type signature = +List(String)+
+* The unapply method's type signature = +List(List(String))+
+* Product type fields = +List(value: String)+
 
 .Example 4:
 ----
 case class CaseClass(i: Int, s: String)
 ----
-The first apply method's type signature = +List(Int,String)+
-The unapply method's type signature = +List(List((Int,String)),List(Int,String))+
-Product type fields = +List(i:Int,s:String)+
+* The first apply method's type signature = +List(Int,String)+
+* The unapply method's type signature = +List(List((Int,String)),List(Int,String))+
+* Product type fields = +List(i:Int,s:String)+
 
 .Example 5:
 ----
 class Tuple2[T1,T2](val _1: T1,val _2 : T2)
 ----
-The first apply method's type signature = +List(T1,T2)+
-The unapply method's type signature = +List(T1,T2)+
-Product type fields = +List(_1:T1,_2:T2)+
+* The first apply method's type signature = +List(T1,T2)+
+* The unapply method's type signature = +List(T1,T2)+
+* Product type fields = +List(_1:T1,_2:T2)+
 
 == Example: ReflectPrint
 ----

@@ -55,12 +55,11 @@ class ReflectPrintMacroBuilderImpl(
       }
     }
 
-    val reflectPrintTypeConstructor = typeOf[ReflectPrint[_]].typeConstructor
-
     val (oomTypeClassValName, oomTypeClassVal) =
-      productType.mkTypeClassFieldValsTree(
-        { _type => appliedType(reflectPrintTypeConstructor, List(_type)) }
-      )
+      productType.oomField.map { field =>
+        val valTermName = TermName(field.name + "ReflectPrint")
+        (valTermName, q"val $valTermName = implicitly[ReflectPrint[${field._type}]]")
+      }.unzip
 
     val oomField = productType.oomField.zip(oomTypeClassValName)
 

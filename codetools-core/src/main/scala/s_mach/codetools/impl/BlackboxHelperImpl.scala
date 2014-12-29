@@ -224,15 +224,17 @@ trait BlackboxHelperImpl extends ProductTypeHelper {
 
                     val productType = aType
                     val oomField =
-                      matchingApplyMethod.paramLists.head.map { symbol =>
-                        val symType = symbol.typeSignature
-                        val _type =
-                          methodTypeParamToTypeParam.getOrElse(
-                            symType.typeSymbol.fullName,
-                            symType
-                          )
-                        ProductType.Field(symbol.name.toString,_type)
-                      }
+                      matchingApplyMethod.paramLists.head
+                        .zipWithIndex
+                        .map { case (symbol,index) =>
+                          val symType = symbol.typeSignature
+                          val _type =
+                            methodTypeParamToTypeParam.getOrElse(
+                              symType.typeSymbol.fullName,
+                              symType
+                            )
+                          ProductType.Field(index,symbol.name.toString,_type)
+                        }
                     val allApplyArgsAreFields = oomField.forall { case field =>
                       aType.member(TermName(field.name)) match {
                         case NoSymbol => false

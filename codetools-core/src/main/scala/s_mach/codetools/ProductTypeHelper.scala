@@ -142,54 +142,36 @@ trait ProductTypeHelper { self =>
      * val (name,age) = Person2.unapply(value).get
      * """
      * @param value the tree for the value
+     * @param mkValName a function that accepts the field name and returns the 
+     *                  name of the val
+     * @param tupleName the val name of the tuple (used only when
+     *                  allFieldsAreMembers is false)
      * @return a Tree with a val for each field decomposed from the value
      */
-    def mkFieldValsTree(value: c.Tree) : Seq[c.Tree] = {
+    def mkFieldValsTree(
+      value: c.Tree,
+      mkValName: String => String = { s => s },
+      tupleName: => String = "__decomposedValue$1"
+    ) : Seq[c.Tree] = {
+
       if(allFieldsAreMembers) {
         oomField.map { case field =>
-          q"val ${field.termName} = $value.${field.termName}"
+          val valTermName = TermName(mkValName(field.name))
+          q"val $valTermName = $value.${field.termName}"
         }
       } else {
         if (oomField.size == 1) {
-          Seq(q"val ${oomField.head.termName} = unapply($value).get")
+          val valTermName = TermName(mkValName(oomField.head.name))
+          Seq(q"val $valTermName = unapply($value).get")
         } else {
-          Seq(q"val __decomposedValue$$1 = unapply($value).get") ++
+          val tupleTermName = TermName(tupleName)
+          Seq(q"val $tupleTermName = unapply($value).get") ++
           oomField.zipWithIndex.map { case (field,i) =>
-            q"val ${field.termName} = __decomposedValue$$1.${TermName(s"_${i+1}")}"
+            val valTermName = TermName(mkValName(field.name))
+            q"val $valTermName = $tupleTermName.${TermName(s"_${i+1}")}"
           }
         }
       }
-    }
-
-
-    /**
-     * Make the Tree necessary to save all of the implicit type-class instances
-     * for each field. Fields are named with the type-class name appended to the
-     * field name.
-     * Example with ReflectPrint:
-     * case class Person(name: String, age: Int)
-     * q"""
-     * val nameReflectPrint = implicitly[ReflectPrint[String] ]
-     * val ageReflectPrint = implicitly[ReflectPrint[Int] ]
-     * """
-     * @param mkTypeClass a function to create an instance of the type-class
-     *                    given the field type
-     * @return a Tree with a type-class val for each field
-     */
-    def mkTypeClassFieldValsTree(
-      mkTypeClass: c.Type => c.Type
-    ) : (Seq[TermName], Seq[c.Tree]) = {
-      oomField
-        .map { field =>
-          val typeClass = mkTypeClass(field._type)
-          val typeClassTermName = 
-            TermName(field.name + typeClass.typeSymbol.name.toString)
-          (
-            typeClassTermName, 
-            q"val $typeClassTermName = implicitly[$typeClass]"
-          )
-        }
-        .unzip
     }
 
   }
@@ -198,10 +180,11 @@ trait ProductTypeHelper { self =>
 
     /**
      * Case class for a field of a product type
+     * @param index index (ordinal) of field
      * @param name name of the field
      * @param _type type of the field
      */
-    case class Field(name: String, _type: c.Type) {
+    case class Field(index: Int, name: String, _type: c.Type) {
       val termName = TermName(name)
     }
   }

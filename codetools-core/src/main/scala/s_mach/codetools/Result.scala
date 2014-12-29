@@ -18,13 +18,16 @@
 */
 package s_mach.codetools
 
+import java.io.{PrintWriter, StringWriter}
+
 import scala.language.higherKinds
 import scala.collection.generic.CanBuildFrom
+import scala.util.control.NonFatal
 
 /**
- * A monad for the result of some computation that may fail with multiple errors
- * or complete successfully with informative or warning messages. The order 
- * that issues (i.e. errors, warnings and info) accumulate is preserved.
+ * A monad for the result of some computation that may fail with an exception,
+ * multiple errors or complete successfully with minor issues (e.g. informative,
+ * warning or debug messages). The order that issues accumulate is preserved.
  *
  * @tparam A type of the computation
  */
@@ -60,13 +63,26 @@ sealed trait Result[+A] {
 }
 
 object Result {
-  /** @return a success result with possible warnings */
-  def apply[A](value: A, issue: Issue*) : Success[A] =
-    Success(value, issue.toList)
+  /** @return a result with issues. If an exception thrown while evaluating
+    *         value, it is caught and a failure returned. Otherwise, success
+    *         is returned. */
+  def apply[A](value: => A, zomIssue: Issue*) : Result[A] = {
+    try {
+      Success(value, zomIssue.toList)
+    } catch {
+      case NonFatal(ex) =>
+        Failure(zomIssue.toList :+ Error(ex))
+    }
+  }
+    
   /** @return a failing result with an error */
-  def error[A](msg: String) : Result[A] = Failure(Error(msg) :: Nil)
+  def error[A](msg: String, optCause: Option[Exception] = None) : Result[A] =
+    Failure(Error(msg,optCause) :: Nil)
+  /** @return a failing result with an error */
+  def error[A](cause: Throwable) : Result[A] =
+    Failure(Error(cause) :: Nil)
   /** @return a failing result with errors */
-  def errors[A](msg: String) : Result[A] = Failure(Error(msg) :: Nil)
+  def errors[A](oomError: Error*) : Result[A] = Failure(oomError.toList)
   def unapply[A](r: Result[A]) : Option[(Option[A],List[Issue])] = Some{
     r match {
       case Success(value, oomIssue) => (Some(value), oomIssue)
@@ -127,19 +143,35 @@ object Result {
 
   sealed trait Issue {
     def message: String
+    def optCause: Option[Throwable]
     def isError: Boolean
+    def print: String = {
+      val sw = new StringWriter()
+      sw.append(message)
+      optCause.foreach { cause =>
+        val pw = new PrintWriter(sw, true)
+        sw.append("\n")
+        cause.printStackTrace(pw)
+      }
+      sw.getBuffer.toString
+    }
   }
-  case class Error(message: String) extends Issue {
+  case class Error(message: String, optCause: Option[Throwable] = None) extends Issue {
     override def isError = true
   }
-  case class Warning(message: String) extends Issue {
+  object Error {
+    def apply(cause: Throwable) : Error = Error(cause.getMessage, Some(cause))
+  }
+  case class Warning(message: String, optCause: Option[Throwable] = None) extends Issue {
     override def isError = false
   }
   case class Info(message: String) extends Issue {
     override def isError = false
+    override def optCause = None
   }
   case class Debug(message: String) extends Issue {
     override def isError = false
+    override def optCause = None
   }
 
   def sequence[A,M[AA] <: Traversable[AA]](

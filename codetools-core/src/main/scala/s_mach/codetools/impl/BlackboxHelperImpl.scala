@@ -48,12 +48,12 @@ trait BlackboxHelperImpl extends ProductTypeHelper {
 
     def logIssues(zomIssue: List[Result.Issue]) = {
       zomIssue.foreach {
-        case Result.Error(message) => c.error(c.enclosingPosition,message)
-        case Result.Warning(message) => c.warning(c.enclosingPosition,message)
-        case Result.Info(message) => c.info(c.enclosingPosition,message,true)
-        case Result.Debug(message) =>
+        case r@Result.Error(_,_) => c.error(c.enclosingPosition,r.print)
+        case r@Result.Warning(_,_) => c.warning(c.enclosingPosition,r.print)
+        case r@Result.Info(_) => c.info(c.enclosingPosition,r.print,true)
+        case r@Result.Debug(_) =>
           if(showDebug) {
-            c.info(c.enclosingPosition,message,false)
+            c.info(c.enclosingPosition,r.print,false)
           }
       }
     }

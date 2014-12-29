@@ -84,7 +84,7 @@ object A {
 }
 ----
 * The first apply method's type signature = +List(Int,String)+
-* The unapply method's type signature = +List(List((Int,String)),Int,String)+
+* The unapply method's type signature = +List(List( (Int,String) ),Int,String)+
 * Product type fields = +List(i:Int,s:String)+
 
 .Example 2:

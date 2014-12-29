@@ -11,20 +11,25 @@ library.
 
 +s_mach.codetools+ currently provides:
 
-* +BlackboxHelper+: a wrapper trait that provides utility methods to assist in
-macro generation, specifically for generating type-class implementations for
-product types
-** +BlackboxHelper.ProductType+: a case class that can compute the field names
-and types of a product type. Works with all case classes, tuple types and any
-other types whose companion object contains a matching apply/unapply method
-pair. (See +BlackboxHelper.ProductType+ for details)
+* +Result[A]+: a better +scala.util.Try+ that allows accumulating errors,
+warnings and other issues in addition to storing failure or success. Returned
+by most +BlackboxHelper+ methods.
+* +BlackboxHelper+: a wrapper trait that provides utility types and methods to
+assist in macro generation, specifically for generating type-class
+implementations for product types
+** +BlackboxHelper.ProductType+: a case class for storing the matching
+apply/unapply methods and field names of a product type. Works for all case
+classes, tuple types and any other type whose companion object contains a
+matching apply/unapply method pair (See +ProductType+ below for
+details). Has utility methods for type-class implementation generation.
+** +BlackboxHlper.calcProductType+: method to attempt to compute a +ProductType+
+for a given type.
 * +ReflectPrint+: a demonstration type-class which can create the Scala code
 necessary for recreating an instance with the same value (See
 +reflectPrint.printApply+).
 * +ReflectPrintMacroBuilderImpl+: a reference implementation of a type-class
 blackbox macro generator that uses +BlackboxHelper+. The macro implementation
-can generate a +ReflectPrint+ implementation for any product type (i.e. case
-class or tuple type)
+can generate a +ReflectPrint+ implementation for any product type.
 * +ReflectPrintTest+: tests for the generated +ReflectPrint+ for various common
 ADT patterns (See +testdata+) in lieu of direct testing of +BlackboxHelper+
 since there is currently no blackbox.Context mock available.
@@ -47,6 +52,81 @@ and are governed by the rules of semantic versioning. Code files inside the
 +s_mach.codetools.impl+ package may be used by downstream applications and
 libraries. However, no guarantees are made as to the stability or interface of
 code in the +s_mach.codetools.impl+ package between versions.
+
+== In Detail: +Product Type+
+A +product type+ is any type that can be expressed as sequence of fields whose
+types are either data types (e.g. Int, String, etc) or other product types.
+Product types are
+http://en.wikipedia.org/wiki/Algebraic_data_type[algebraic data types] that can
+be decomposed into an ordered sequence of fields. Each field consists of an
+index within the sequence, a field name and a field type.
+
+In +s_mach.codetools+, product types are computed by finding the first
+unapply/apply method pair in the type's companion object with matching type
+signatures. The type signature of an apply method is equal to the sequence of
+the types of its arguments. Unapply methods may have one or two type signatures
+based on their return type. First, the outer Option return type is discarded,
+leaving only the inner type. If the inner type is a tuple type, then both the
+tuple type and the list of tuple type parameters form possible type signatures
+for the unapply method. Otherwise, if the inner type parameter is not a tuple type
+then the type signature is equal to the single type parameter. Once an
+apply/unapply match is made, the symbols of the apply method's argument list are
+returned as  the product type fields for the type. For tuple types and case
+classes, this will be the list of it's fields.
+
+.Example 1:
+----
+class A(...) { ... }
+object A {
+    def apply(i: Int, s: String) : A = ???
+    def apply(i: Int, s: String, f: Float) : A = ???
+    def unapply(a: A) : Option[(Int,String)] = ???
+}
+---
+The first apply method's type signature = +List(Int,String)+
+The unapply method's type signature = +List(List((Int,String)),Int,String)+
+Product type fields = +List(i:Int,s:String)+
+
+.Example 2:
+----
+class B(...) { ... }
+object B {
+  def apply(tuple: (String,Int)) : A = ???
+  def apply(i: Int, s: String) : A = ???
+  def unapply(b: B) : Option[(Int,String)] = ???
+}
+----
+The first apply method's type signature = +List((String,Int))+
+The unapply method's type signature = +List(List((String,Int)),List(String,Int))+
+Product type fields = +List(tuple: (String, Int))+
+
+.Example 3:
+----
+class Enum(...) { ... }
+object Enum {
+  def apply(value: String) : A = ???
+  def unapply(e: Enum) : Option[String] = ???
+}
+----
+The first apply method's type signature = +List(String)+
+The unapply method's type signature = +List(List(String))+
+Product type fields = +List(value: String)+
+
+.Example 4:
+----
+case class CaseClass(i: Int, s: String)
+----
+The first apply method's type signature = +List(Int,String)+
+The unapply method's type signature = +List(List((Int,String)),List(Int,String))+
+Product type fields = +List(i:Int,s:String)+
+
+.Example 5:
+----
+class Tuple2[T1,T2](val _1: T1,val _2 : T2)
+----
+The first apply method's type signature = +List(T1,T2)+
+The unapply method's type signature = +List(T1,T2)+
+Product type fields = +List(_1:T1,_2:T2)+
 
 == Example: ReflectPrint
 ----

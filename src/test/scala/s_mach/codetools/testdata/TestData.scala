@@ -83,6 +83,6 @@ object TestData5 {
 case class TestData6[A <: TestBaseADT](value1: A)
 
 object TestData6 {
-  implicit def ReflectPrint_Testdata6[A <: TestBaseADT](implicit aPrintable:ReflectPrint[A]) : ReflectPrint[TestData6[A]] =
+  implicit def ReflectPrint_Testdata6[A <: TestBaseADT](implicit aReflectPrint:ReflectPrint[A]) : ReflectPrint[TestData6[A]] =
     ReflectPrint.forProductType[TestData6[A]]
 }

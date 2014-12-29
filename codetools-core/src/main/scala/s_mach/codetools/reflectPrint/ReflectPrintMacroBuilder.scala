@@ -29,7 +29,8 @@ trait ReflectPrintMacroBuilder {
 }
 
 object ReflectPrintMacroBuilder {
-  def apply(c:blackbox.Context) : ReflectPrintMacroBuilder =
-    new ReflectPrintMacroBuilderImpl(c)
+  def apply(c:blackbox.Context, showDebug: Boolean = false) : ReflectPrintMacroBuilder = {
+    new ReflectPrintMacroBuilderImpl(c, showDebug)
+  }
 }
 

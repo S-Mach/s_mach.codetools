@@ -23,13 +23,28 @@ import scala.reflect.macros.blackbox
 import s_mach.codetools.{Result, BlackboxHelper}
 import s_mach.codetools.reflectPrint._
 
-class ReflectPrintMacroBuilderImpl(val c: blackbox.Context) extends
+class ReflectPrintMacroBuilderImpl(
+  val c: blackbox.Context,
+  override val showDebug: Boolean
+) extends
   ReflectPrintMacroBuilder with
   BlackboxHelper {
   import c.universe._
 
-  def build[A: c.WeakTypeTag]() : c.Expr[ReflectPrint[A]] = {
-    val aType = c.weakTypeOf[A]
+  def build[A: c.WeakTypeTag]() : c.Expr[ReflectPrint[A]] = getOrAbort {
+    for {
+      productType <- calcProductType(c.weakTypeTag[A].tpe)
+      result <- build(productType)
+    } yield {
+      result
+    }
+  }
+
+  def build[A: c.WeakTypeTag](
+    productType: ProductType
+  ) : Result[c.Expr[ReflectPrint[A]]] = {
+    val aType = productType._type
+
     val isTuple = isTupleType(aType)
 
     val aTypeName = {
@@ -40,24 +55,14 @@ class ReflectPrintMacroBuilderImpl(val c: blackbox.Context) extends
       }
     }
 
-    val printableTypeConstructor = typeOf[ReflectPrint[_]].typeConstructor
+    val reflectPrintTypeConstructor = typeOf[ReflectPrint[_]].typeConstructor
 
-    val productType : ProductType = abortIfFailure(ProductType(aType))
+    val (oomTypeClassValName, oomTypeClassVal) =
+      productType.mkTypeClassFieldValsTree(
+        { _type => appliedType(reflectPrintTypeConstructor, List(_type)) }
+      )
 
-    val lcs = ('a' to 'z').map(_.toString)
-
-    val oomField =
-      productType.oomField.zip(lcs).map { case (field,lc) =>
-        (TermName(s"_${lc}ReflectPrint"), field)
-      }
-
-    val fields = oomField.map { case (rpFieldName,field) =>
-      val innerReflectPrintType = appliedType(printableTypeConstructor, List(field._type))
-      val innerReflectPrint =
-        abortIfFailure(inferImplicit(innerReflectPrintType))
-
-      q"val $rpFieldName = $innerReflectPrint"
-    }
+    val oomField = productType.oomField.zip(oomTypeClassValName)
 
     def mkBody(aTypeName: String,showSymbols:Boolean) : c.Tree = {
       def appendFieldName(fieldName:String) : c.Tree = {
@@ -76,9 +81,9 @@ if(fmt.namedParams) {
       }
 
       if (oomField.size == 1) {
-        val (rpFieldName, field) = oomField.head
+        val (field, typeClassValName) = oomField.head
         q"""
-val v = ${aType.typeSymbol.companion}.unapply(a).get
+..${productType.mkFieldValsTree(q"a")}
 val builder = new StringBuilder
 ${ if(aTypeName.nonEmpty) {
           q"""
@@ -91,8 +96,8 @@ builder.append('(')
 }
 val innerFmt = fmt.copy(indent = fmt.indent + fmt.indentString)
 builder.append(innerFmt.newLine)
-${appendFieldName(field.fieldName)}
-builder.append($rpFieldName.printApply(v)(innerFmt))
+${appendFieldName(field.name)}
+builder.append($typeClassValName.printApply(${TermName(field.name)})(innerFmt))
 builder.append(fmt.newLine)
 ${if(aTypeName.nonEmpty) q"builder.append(')')" else q""}
 builder.result()
@@ -101,20 +106,20 @@ builder.result()
         val values =
           oomField
             .zipWithIndex
-            .map { case ((rpFieldName, field), i) =>
+            .map { case ((field, typeClassValName), i) =>
             q"""
 {
   val innerFmt = fmt.copy(indent = fmt.indent + fmt.indentString)
   builder.append(innerFmt.newLine)
-  ${appendFieldName(field.fieldName)}
-  builder.append($rpFieldName.printApply(tuple.${TermName("_" + (i + 1))})(innerFmt))
+  ${appendFieldName(field.name)}
+  builder.append($typeClassValName.printApply(${TermName(field.name)})(innerFmt))
   ${if (i != oomField.indices.last) q"builder.append(',')" else q""}
 }
               """
           }
 
         q"""{
-val tuple = ${aType.typeSymbol.companion}.unapply(a).get
+..${productType.mkFieldValsTree(q"a")}
 val builder = new StringBuilder
 ${if(aTypeName.nonEmpty) q"builder.append($aTypeName)" else q""}
 builder.append('(')
@@ -129,13 +134,12 @@ builder.result()
     val result = c.Expr[ReflectPrint[A]] {
       q"""
 new ReflectPrint[$aType] {
-  ..$fields
+  ..$oomTypeClassVal
   def printApply(a: $aType)(implicit fmt:ReflectPrintFormat) = ${mkBody(aTypeName,isTuple == false)}
   def printUnapply(a: $aType)(implicit fmt:ReflectPrintFormat) = ${mkBody("",false)}
 }
       """
     }
-//    println(result)
-    result
+    Result(result,Result.Debug(result.toString()))
   }
 }

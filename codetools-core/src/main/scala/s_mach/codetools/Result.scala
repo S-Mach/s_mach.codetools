@@ -61,8 +61,8 @@ sealed trait Result[+A] {
 
 object Result {
   /** @return a success result with possible warnings */
-  def apply[A](value: A, warning: String*) : Success[A] =
-    Success(value, warning.map(Warning.apply).toList)
+  def apply[A](value: A, issue: Issue*) : Success[A] =
+    Success(value, issue.toList)
   /** @return a failing result with an error */
   def error[A](msg: String) : Result[A] = Failure(Error(msg) :: Nil)
   /** @return a failing result with errors */
@@ -136,6 +136,9 @@ object Result {
     override def isError = false
   }
   case class Info(message: String) extends Issue {
+    override def isError = false
+  }
+  case class Debug(message: String) extends Issue {
     override def isError = false
   }
 

@@ -18,16 +18,17 @@
 */
 package s_mach.codetools.impl
 
-import s_mach.codetools.Result
+import s_mach.codetools.{ProductTypeHelper, Result}
 
 import scala.reflect.macros.blackbox
 
-trait BlackboxHelperImpl {
+trait BlackboxHelperImpl extends ProductTypeHelper {
   val c:blackbox.Context
-
+  import c.universe._
+  
   object Impl {
 
-    def abortIfFailure[A,X](r: Result[A]) : A = {
+    def getOrAbort[A,X](r: Result[A]) : A = {
       r.fold(
         isSuccess = { s:Result.Success[A] =>
           logIssues(r.zomIssue)
@@ -50,6 +51,10 @@ trait BlackboxHelperImpl {
         case Result.Error(message) => c.error(c.enclosingPosition,message)
         case Result.Warning(message) => c.warning(c.enclosingPosition,message)
         case Result.Info(message) => c.info(c.enclosingPosition,message,true)
+        case Result.Debug(message) =>
+          if(showDebug) {
+            c.info(c.enclosingPosition,message,false)
+          }
       }
     }
 
@@ -65,8 +70,7 @@ trait BlackboxHelperImpl {
     def getCompanionMethod(
       aType: c.Type,
       methodName: String
-    ) : Result[c.universe.MethodSymbol] = {
-      import c.universe._
+    ) : Result[MethodSymbol] = {
       aType.typeSymbol.companion.typeSignature.decl(TermName(methodName)) match {
         case NoSymbol =>
           Result.error(s"$aType.$methodName method does not exist")
@@ -82,12 +86,11 @@ trait BlackboxHelperImpl {
 
     type TypeSig = List[String]
 
-    def calcProductTypeFields(aType: c.Type): Result[List[(String, c.Type)]] = {
+    def calcProductType(aType: c.Type): Result[ProductType] = {
 
       val aTypeParams = aType.typeConstructor.typeParams.map(_.toString)
 
-      def filterMethod(method:c.universe.MethodSymbol) : Result[Option[c.universe.MethodSymbol]] = {
-        import c.universe._
+      def filterMethod(method:MethodSymbol) : Result[Option[MethodSymbol]] = {
 
         if(
           // Silently ignore methods who have a different count of type parameters
@@ -116,7 +119,7 @@ trait BlackboxHelperImpl {
           } else {
             Result(
               None,
-              s"Ignoring possible matching $method method whose type parameter symbols ${method.typeParams} do not match ${aType.typeSymbol} type parameter symbols ${aType.typeConstructor.typeParams}"
+              Result.Warning(s"Ignoring possible matching $method method whose type parameter symbols ${method.typeParams} do not match ${aType.typeSymbol} type parameter symbols ${aType.typeConstructor.typeParams}")
             )
           }
         } else {
@@ -141,10 +144,8 @@ trait BlackboxHelperImpl {
       }
 
       def calcOomUnapplyTypeSig(
-        unapplyMethod:c.universe.MethodSymbol
+        unapplyMethod:MethodSymbol
       ) : List[TypeSig] = {
-        import c.universe._
-
         // Outer type for unapply is always Option, so strip it
         val TypeRef(_,_,oneOuterArg) = unapplyMethod.returnType
         oneOuterArg.head match {
@@ -165,7 +166,7 @@ trait BlackboxHelperImpl {
       }
 
       def calcApplyTypeSig(
-        applyMethod:c.universe.MethodSymbol
+        applyMethod:MethodSymbol
       ) : TypeSig = {
         mkTypeSig(
           applyMethod.paramLists.head.map { param =>
@@ -197,34 +198,61 @@ trait BlackboxHelperImpl {
               case (oomApplyMethod,Some(unapplyMethod)) =>
                 // Search for first unapply type sig that matches an apply type sig
                 val oomUnapplyTypeSig = calcOomUnapplyTypeSig(unapplyMethod)
-                oomUnapplyTypeSig.toStream.map { unapplyTypeSig =>
-                  oomApplyMethod.find { applyMethod =>
-                    calcApplyTypeSig(applyMethod) == unapplyTypeSig
-                  } match {
-                    case Some(matchingApplyMethod) =>
-                      // TODO: figure out proper way to get method type params to match type type params
-                      val methodTypeParamToTypeParam =
-                        matchingApplyMethod.typeParams
-                          .map(_.fullName)
-                          .zip(aType.typeArgs)
-                          .toMap
+                val lazySearch =
+                  oomUnapplyTypeSig.toStream.map { unapplyTypeSig =>
+                    oomApplyMethod.find { applyMethod =>
+                      calcApplyTypeSig(applyMethod) == unapplyTypeSig
+                    } match {
+                      case Some(matchingApplyMethod) =>
 
-                      Some {
-                        matchingApplyMethod.paramLists.head.map { symbol =>
-                          val symType = symbol.typeSignature
-                          val _type =
-                            methodTypeParamToTypeParam.getOrElse(
-                              symType.typeSymbol.fullName,
-                              symType
-                            )
-                          (symbol.name.toString,_type)
+                        Some {
+                          (
+                            matchingApplyMethod,
+                            unapplyMethod
+                          )
+                        }
+                      case None => None
+                    }
+                  }
+                lazySearch.collectFirst { case Some((matchingApplyMethod, matchingUnapplyMethod)) =>
+                    // TODO: figure out proper way to get method type params to match type type params
+                    val methodTypeParamToTypeParam =
+                      matchingApplyMethod.typeParams
+                        .map(_.fullName)
+                        .zip(aType.typeArgs)
+                        .toMap
+
+                    val productType = aType
+                    val oomField =
+                      matchingApplyMethod.paramLists.head.map { symbol =>
+                        val symType = symbol.typeSignature
+                        val _type =
+                          methodTypeParamToTypeParam.getOrElse(
+                            symType.typeSymbol.fullName,
+                            symType
+                          )
+                        ProductType.Field(symbol.name.toString,_type)
+                      }
+                    val allApplyArgsAreFields = oomField.forall { case field =>
+                      aType.member(TermName(field.name)) match {
+                        case NoSymbol => false
+                        case memberSymbol => memberSymbol.asMethod match {
+                          case NoSymbol => false
+                          case methodSymbol =>
+                            methodSymbol != NoSymbol &&
+                            methodSymbol.getter != NoSymbol
                         }
                       }
-                    case None => None
-                  }
-                }
-                  .collectFirst { case Some(productType) => productType } match {
-                  case s@Some(oomSymbol) => Result(oomSymbol)
+                    }
+                    ProductType(
+                      _type = productType,
+                      oomField = oomField,
+                      applyMethod = applyMethod,
+                      unapplyMethod = unapplyMethod,
+                      allApplyArgsAreFields: Boolean
+                    )
+                } match {
+                  case Some(productType) => Result(productType)
                   case None =>
                     Result.error {
                       s"No matching apply/unapply method pair found for ${aType.typeSymbol.fullName}\n" +

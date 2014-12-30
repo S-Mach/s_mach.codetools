@@ -39,7 +39,7 @@ since there is currently no blackbox.Context mock available.
 +
 [source,sbt,numbered]
 ----
-libraryDependencies += "net.s_mach" %% "codetools" % "1.0.3"
+libraryDependencies += "net.s_mach" %% "codetools" % "1.0.4"
 ----
 NOTE: +s_mach.codetools+ is currently only compiled for Scala 2.11 (though
 2.10.4 support can be added if there is interest)

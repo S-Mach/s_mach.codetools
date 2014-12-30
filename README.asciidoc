@@ -176,7 +176,7 @@ val n3 = Name("Lance",None,"Gatlin")
 val m1 = Movie("The Professional",1994)
 val m2 = Movie("The Fifth Element",1997)
 val m3 = Movie("Memento",1994)
-val m4 = Movie("Prometheus",2000)
+val m4 = Movie("Prometheus",2012)
 
 val a1 = Actor(n1,56,Set(m1,m2))
 val a2 = Actor(n2,47,Set(m3,m4))
@@ -197,9 +197,9 @@ n3: Name = Name(Lance,None,Gatlin)
 m1: Movie = Movie(The Professional,1994)
 m2: Movie = Movie(The Fifth Element,1997)
 m3: Movie = Movie(Memento,1994)
-m4: Movie = Movie(Prometheus,2000)
+m4: Movie = Movie(Prometheus,2012)
 a1: Actor = Actor(Name(Gary,Some(Freakn),Oldman),56,Set(Movie(The Professional,1994), Movie(The Fifth Element,1997)))
-a2: Actor = Actor(Name(Guy,None,Pearce),47,Set(Movie(Memento,1994), Movie(Prometheus,2000)))
+a2: Actor = Actor(Name(Guy,None,Pearce),47,Set(Movie(Memento,1994), Movie(Prometheus,2012)))
 a3: Actor = Actor(Name(Lance,None,Gatlin),37,Set())
 
 scala> a1.printApply
@@ -239,7 +239,7 @@ Actor(
     ),
     Movie(
       name = "Prometheus",
-      year = 2000
+      year = 2012
     )
   )
 )

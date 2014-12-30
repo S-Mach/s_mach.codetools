@@ -65,14 +65,15 @@ In +s_mach.codetools+, product types are computed by finding the first
 unapply/apply method pair in the type's companion object with matching type
 signatures. The type signature of an apply method is equal to the sequence of
 the types of its arguments. Unapply methods may have one or two type signatures
-based on their return type. First, the outer Option return type is discarded,
-leaving only the inner type. If the inner type is a tuple type, then both the
-tuple type and the list of tuple type parameters form possible type signatures
-for the unapply method. Otherwise, if the inner type parameter is not a tuple type
-then the type signature is equal to the single type parameter. Once an
-apply/unapply match is made, the symbols of the apply method's argument list are
-returned as  the product type fields for the type. For tuple types and case
-classes, this will be the list of its fields.
+based on their return type. First, the outer Option of the return type is
+discarded, leaving only the inner type. If the inner type is a tuple type,
+then both the tuple type and the list of tuple type parameters form possible
+type signatures for the unapply method. Otherwise, if the inner type parameter
+is not a tuple type then the type signature of the unapply method is equal to
+the single type parameter. Once an apply/unapply match is made, the symbols of
+the apply method's argument list are used to extract the product type fields
+for the type. For tuple types and case classes, this will be the list of its
+fields.
 
 .Example 1:
 ----

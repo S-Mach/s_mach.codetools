@@ -16,11 +16,11 @@ warnings and other issues in addition to storing failure or success. Returned
 by most +BlackboxHelper+ methods.
 * +BlackboxHelper+: a wrapper trait that provides utility types and methods to
 assist in macro generation, specifically for generating type-class
-implementations for product types
+implementations for product types.
 ** +BlackboxHelper.ProductType+: a case class for storing the matching
 apply/unapply methods and field info of a product type. Has utility methods for
 type-class implementation generation.
-** +BlackboxHlper.calcProductType+: method to attempt to compute a +ProductType+
+** +BlackboxHelper.calcProductType+: method to attempt to compute a +ProductType+
 for a given type. Works for all case classes, tuple types and any other type
 whose companion object contains a matching apply/unapply method pair (See
 +ProductType+ section below for details).

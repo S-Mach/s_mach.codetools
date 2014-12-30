@@ -108,25 +108,25 @@ object Enum {
   def unapply(e: Enum) : Option[String] = ???
 }
 ----
-* The first apply method's type signature = +List(String)+
-* The unapply method's type signature = +List(List(String))+
-* Product type fields = +List(value: String)+
+* The first apply method's type signature = +String :: Nil+
+* Possible unapply method's type signatures = +String :: Nil+
+* Product type fields = +("value",String) :: Nil+
 
 .Example 4:
 ----
 case class CaseClass(i: Int, s: String)
 ----
-* The first apply method's type signature = +List(Int,String)+
-* The unapply method's type signature = +List(List((Int,String)),List(Int,String))+
-* Product type fields = +List(i:Int,s:String)+
+* The first apply method's type signature = +Int :: String :: Nil+
+* Possible unapply method's type signatures = +((Int,String) :: Nil) ::: (Int:: String :: Nil)+
+* Product type fields = +("i",Int) :: ("s",String) :: Nil+
 
 .Example 5:
 ----
 class Tuple2[T1,T2](val _1: T1,val _2 : T2)
 ----
-* The first apply method's type signature = +List(T1,T2)+
-* The unapply method's type signature = +List(T1,T2)+
-* Product type fields = +List(_1:T1,_2:T2)+
+* The first apply method's type signature = +T1 :: T2 :: Nil+
+* Possible unapply method's type signatures = +((T1,T2) :: Nil) ::: (T1:: T2 :: Nil)+
+* Product type fields = +("_1",T1) :: ("_2",T2) :: Nil+
 
 == Example: ReflectPrint
 ----

@@ -1,7 +1,8 @@
 == Publish checklist
 
-1. Update build.sbt with new version
+1. Update build.sbt with new version vX.Y.Z
 2. git tag vX.Y.Z
-3. git push origin vX.Y.Z
-4. Ensure s_mach secring.gpg file are present in ~/.gnupg
-4. sbt publishSigned (password required)
+3. git push
+4. git push origin vX.Y.Z
+5. Ensure s_mach ~/.gnupg/secring.gpg file is present
+6. sbt publishSigned (password required)

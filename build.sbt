@@ -42,7 +42,7 @@ val publishSettings = Seq(
 val defaultSettings = Defaults.coreDefaultSettings ++ publishSettings ++ Seq(
   scalaVersion := "2.11.6",
   organization := "net.s_mach",
-  version := "1.0.4",
+  version := "1.0.5",
   scalacOptions ++= Seq(
     "-feature",
     "-unchecked",
@@ -73,6 +73,5 @@ lazy val codetoolsCore = Project(
 )
   .settings(defaultSettings: _*)
   .settings(libraryDependencies ++= Seq(
-    "com.typesafe.scala-logging" %% "scala-logging" % "3.1.0",
     "org.scala-lang" % "scala-reflect" % scalaVersion.value
   ))

@@ -1,5 +1,3 @@
-sbtVersion := "0.13.5"
-
 val nexus = "https://oss.sonatype.org/"
 val nexusSnapshots = "snapshots" at nexus + "content/repositories/snapshots"
 val nexusReleases = "releases"  at nexus + "service/local/staging/deploy/maven2"

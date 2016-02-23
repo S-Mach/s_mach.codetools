@@ -8,9 +8,9 @@ notifications:
     recipients:
     - lance.gatlin@s-mach.net
 script:
-- sbt coverage test coverageReport -sbt-version 0.13.5 -J-Xms4G -J-Xmx4G
+- sbt coverage test coverageReport -J-Xms4G -J-Xmx4G
 after_success:
-- sbt coveralls codacyCoverage -sbt-version 0.13.5
+- sbt coveralls codacyCoverage
 - >
       test "${TRAVIS_PULL_REQUEST}" = 'false' &&
       test "${TRAVIS_BRANCH}" == 'master' &&

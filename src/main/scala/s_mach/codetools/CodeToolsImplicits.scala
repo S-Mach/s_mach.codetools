@@ -1,5 +1,8 @@
 package s_mach.codetools
 
+import scala.language.implicitConversions
+import scala.language.higherKinds
+
 object CodeToolsImplicits extends CodeToolsImplicits
 trait CodeToolsImplicits {
   /**

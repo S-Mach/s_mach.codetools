@@ -18,9 +18,4 @@
 */
 package s_mach
 
-import scala.language.implicitConversions
-import scala.language.higherKinds
-
-package object codetools extends CodeToolsImplicits {
-
-}
+package object codetools extends CodeToolsImplicits

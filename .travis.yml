@@ -1,6 +1,8 @@
 language: scala
 scala:
 - 2.11.7
+addons:
+  hostname: short-hostname
 jdk:
 - openjdk6
 notifications:

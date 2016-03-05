@@ -9,8 +9,17 @@ image:https://travis-ci.org/S-Mach/s_mach.codetools.svg[Build Status, link="http
 +s_mach.codetools+ is an open-source Scala macro, codegen and code utility
 library.
 
-+s_mach.codetools+ currently provides:
-
+== Features
+* trait IsValueClass[A]
+** A base trait for a user-defined value-class that standardizes the name of
+the value-class val to "underlying" and toString to underlying toString. This
+allows creating an implicit conversion from an instance of any value-class to its
+underlying representation.
+* trait IsDistinctTypeAlias[A]
+** Marker trait used to mark a type alias as being a distinct type alias (DTA).
+A DTA is an alternative to the Scala value-class
+(http://docs.scala-lang.org/overviews/core/value-classes.html) that
+never needs to box (or unbox) since type aliases are eliminated in byte code.
 * +Result[A]+: a better +scala.util.Try+ that allows accumulating errors,
 warnings and other issues in addition to storing failure or success. Returned
 by most +BlackboxHelper+ methods.

@@ -1,4 +1,1 @@
-* Add IsValueClass/DistinctTypeAlias to readme
-* Add test for IsValueForClass.toString
-* Travis/coveralls/codacy
 * Release 1.1.0

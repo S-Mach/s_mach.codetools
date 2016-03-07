@@ -134,49 +134,50 @@ Type :help for more information.
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
-  import s_mach.codetools._
+    import s_mach.codetools._
 
-  trait AgeTag
-  type Age = Int with AgeTag with IsDistinctTypeAlias[Int]
-  import scala.language.implicitConversions
-  @inline implicit def Age(age: Int) = age.asInstanceOf[Age]
+    trait NameTag
+    type Name = String with NameTag with IsDistinctTypeAlias[String]
+    import scala.language.implicitConversions
+    @inline implicit def Name(name: String) = name.asInstanceOf[Name]
 
-  def bar(i :Int) = println(i)
-  def bars(is: List[Int]) = println(is)
+    def foo(s: String) = println(s)
+    def foos(ss: List[String]) = println(ss)
 
 
 // Exiting paste mode, now interpreting.
 
-defined trait AgeTag
-defined type alias Age
+import s_mach.codetools._
+defined trait NameTag
+defined type alias Name
 import scala.language.implicitConversions
-Age: (age: Int)Age
-bar: (i: Int)Unit
-bars: (is: List[Int])Unit
+Name: (name: String)Name
+foo: (s: String)Unit
+foos: (ss: List[String])Unit
 
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
-  // No need for implicit since Age is an Int
-  bar(Age(10))
+    // No implicit needed since Name is an Int
+    foo(Name("asdf"))
 
 
 // Exiting paste mode, now interpreting.
 
-10
+asdf
 
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
-  val ages = List(Age(10),Age(20),Age(30))
-  // No conversion needed since covariance allows upcasting List[Age] to List[Int]
-  bars(ages)
+    // Covariance of List allows List[Name] to be upcast to List[Int] (no copying)
+    val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
+    foos(names)
 
 
 // Exiting paste mode, now interpreting.
 
-List(10, 20, 30)
-ages: List[Age] = List(10, 20, 30)
+List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+names: List[Name] = List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
 
 scala>
 ----

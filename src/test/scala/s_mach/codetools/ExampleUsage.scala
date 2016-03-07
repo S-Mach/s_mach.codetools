@@ -19,35 +19,43 @@
 package s_mach.codetools
 
 object ExampleUsage {
-  import s_mach.codetools._
 
-  implicit class Name(
-    val underlying: String
-  ) extends AnyVal with IsValueClass[String]
+  object ValueClass {
+    import s_mach.codetools._
 
-  def foo(s: String) = println(s)
-  def foos(ss: List[String]) = println(ss)
+    implicit class Name(
+      val underlying: String
+      ) extends AnyVal with IsValueClass[String]
 
-  // Implicit conversion from Name => String
-  foo(Name("asdf"))
+    def foo(s: String) = println(s)
+    def foos(ss: List[String]) = println(ss)
 
-  // No implicit conversion from M[Name] => M[String] since it would hide copying
-  val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
-  foos(names.map(_.underlying))
+    // Implicit conversion from Name => String
+    foo(Name("asdf"))
 
-  trait AgeTag
-  type Age = Int with AgeTag with IsDistinctTypeAlias[Int]
-  import scala.language.implicitConversions
-  @inline implicit def Age(age: Int) = age.asInstanceOf[Age]
+    // No implicit conversion from M[Name] => M[String] since it would hide copying
+    val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
+    foos(names.map(_.underlying))
+  }
 
-  def bar(i :Int) = println(i)
-  def bars(is: List[Int]) = println(is)
+  object DistinctTypeAlias {
+    import s_mach.codetools._
 
-  // No need for implicit since Age is an Int
-  bar(Age(10))
+    trait NameTag
+    type Name = String with NameTag with IsDistinctTypeAlias[String]
+    import scala.language.implicitConversions
+    @inline implicit def Name(name: String) = name.asInstanceOf[Name]
 
-  val ages = List(Age(10),Age(20),Age(30))
-  // No conversion needed since covariance allows upcasting List[Age] to List[Int]
-  bars(ages)
+    def foo(s: String) = println(s)
+    def foos(ss: List[String]) = println(ss)
+
+    // No implicit needed since Name is an Int
+    foo(Name("asdf"))
+
+    // Covariance of List allows List[Name] to be upcast to List[Int] (no copying)
+    val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
+    foos(names)
+  }
+
 
 }

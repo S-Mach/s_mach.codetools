@@ -10,11 +10,11 @@ image:https://travis-ci.org/S-Mach/s_mach.codetools.svg[Build Status, link="http
 library.
 
 == Features
-* IsValueClass[A]: A base trait for a user-defined value-class that standardizes the name of
+* +IsValueClass[A]+: A base trait for a user-defined value-class that standardizes the name of
 the value-class val to "underlying" and toString to underlying toString. This
 allows creating an implicit conversion from an instance of any value-class to its
 underlying representation.
-* IsDistinctTypeAlias[A]: marker trait used to mark a type alias as being a distinct type alias (DTA).
+* +IsDistinctTypeAlias[A]+: marker trait used to mark a type alias as being a distinct type alias (DTA).
 A DTA is an alternative to the Scala value-class
 (http://docs.scala-lang.org/overviews/core/value-classes.html) that
 never needs to box (or unbox) since type aliases are eliminated in byte code.
@@ -40,6 +40,7 @@ can generate a +ReflectPrint+ implementation for any product type.
 * +ReflectPrintTest+: tests for the generated +ReflectPrint+ for various common
 ADT patterns (See +testdata+) in lieu of direct testing of +BlackboxHelper+
 since there is currently no blackbox.Context mock available.
+* For Play JSON support see https://github.com/S-Mach/s_mach.codetools-play_json[+s_mach.codetools-play_json+] companion library
 
 == Include in SBT
 1. Add to +build.sbt+
@@ -49,6 +50,16 @@ since there is currently no blackbox.Context mock available.
 libraryDependencies += "net.s_mach" %% "codetools" % "1.0.4"
 ----
 NOTE: +s_mach.codetools+ is based on blackbox macro support, present only in Scala 2.11+
+
+2. Or with Play JSON support:
++
+[source,sbt,numbered]
+----
+libraryDependencies ++= Seq(
+  "net.s_mach" %% "codetools" % "2.0.0",
+  "net.s_mach" %% "codetools-play_json" % "2.0.0"
+)
+----
 
 == Versioning
 +s_mach.codetools+ uses semantic versioning (http://semver.org/).

@@ -25,17 +25,21 @@ object ExampleUsage {
 
     implicit class Name(
       val underlying: String
-      ) extends AnyVal with IsValueClass[String]
+    ) extends AnyVal with IsValueClass[String]
 
-    def foo(s: String) = println(s)
-    def foos(ss: List[String]) = println(ss)
+    // codetools standardizes IsValueClass.toString to underlying.toString
+    def printName(n: Name) = println(n)
+    def printString(s: String) = println(s)
+    def printStrings(ss: List[String]) = println(ss)
 
-    // Implicit conversion from Name => String
-    foo(Name("asdf"))
+    // Scala value-class auto wraps String => Name
+    printName("Gary Oldman")
+    // codetools adds implicit conversion from Name => String
+    printString(Name("Gary Oldman"))
 
     // No implicit conversion from M[Name] => M[String] since it would hide copying
     val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
-    foos(names.map(_.underlying))
+    printStrings(names.map(_.underlying))
   }
 
   object DistinctTypeAlias {
@@ -46,15 +50,18 @@ object ExampleUsage {
     import scala.language.implicitConversions
     @inline implicit def Name(name: String) = name.asInstanceOf[Name]
 
-    def foo(s: String) = println(s)
-    def foos(ss: List[String]) = println(ss)
+    def printName(n: Name) = println(n)
+    def printString(s: String) = println(s)
+    def printStrings(ss: List[String]) = println(ss)
 
-    // No implicit needed since Name is an Int
-    foo(Name("asdf"))
+    // implicit def above provides trivial conversion String => Name
+    printName("Gary Oldman")
+    // No conversion needed since Name is an String
+    printString(Name("Gary Oldman"))
 
     // Covariance of List allows List[Name] to be upcast to List[Int] (no copying)
     val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
-    foos(names)
+    printStrings(names)
   }
 
 

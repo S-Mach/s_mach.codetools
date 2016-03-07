@@ -23,7 +23,7 @@ trait CodeToolsImplicits {
    * @tparam A underlying type of DTA
    * @return instance cast to M[V]
    */
-  @inline implicit def distinctTypeAlias_mVtoMa[
+  @inline implicit def distinctTypeAlias_MVtoMA[
     M[_],
     V <: IsDistinctTypeAlias[A],
     A
@@ -31,6 +31,24 @@ trait CodeToolsImplicits {
     ma: M[A]
   ) : M[V] =
     ma.asInstanceOf[M[V]]
+
+  /**
+   * Implicitly convert any generic M[V] to M[A]
+   * where V is a distinct type alias of A
+   * @param ma generic instance
+   * @tparam M generic type
+   * @tparam V DTA type
+   * @tparam A underlying type of DTA
+   * @return instance cast to M[V]
+   */
+  @inline implicit def distinctTypeAlias_MAtoMV[
+    M[_],
+    V <: IsDistinctTypeAlias[A],
+    A
+  ](
+    ma: M[V]
+  ) : M[A] =
+    ma.asInstanceOf[M[A]]
 
   /**
    * Implicitly convert any generic M[A,B] to a M[V,B]

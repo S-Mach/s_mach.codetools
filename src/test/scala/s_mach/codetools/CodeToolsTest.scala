@@ -62,17 +62,18 @@ class CodeToolsTest extends FlatSpec with Matchers {
     upcast(values.map(Weight))
   }
 
-  "M[Double]" should "implicitly downcast to M[Weight]" in {
-    val values = List(
+  "M[Double]" should "implicitly downcast to M[Weight] even if M isn't covariant" in {
+    // Use array since its invariant
+    val values = Array(
       150.0,
       151.0,
       152.0
     )
-    def downcast(weights: List[Weight]): Unit = {
+    def downcast(weights: Array[Weight]): Unit = {
       weights should be (values)
     }
     // Manually invoke converter
-    val _:List[Weight] = distinctTypeAlias_mVtoMa(values)
+    val _:Array[Weight] = distinctTypeAlias_MVtoMA(values)
     // Note: intellij chokes on this
     // Test implicit conversion
     downcast(values)

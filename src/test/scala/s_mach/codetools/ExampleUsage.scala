@@ -21,6 +21,7 @@ package s_mach.codetools
 object ExampleUsage {
 
   object ValueClass {
+
     import s_mach.codetools._
 
     implicit class Name(
@@ -30,6 +31,7 @@ object ExampleUsage {
     // codetools standardizes IsValueClass.toString to underlying.toString
     def printName(n: Name) = println(n)
     def printString(s: String) = println(s)
+    def printNames(ns: List[Name]) = println(ns)
     def printStrings(ss: List[String]) = println(ss)
 
     // Scala value-class auto wraps String => Name
@@ -37,8 +39,12 @@ object ExampleUsage {
     // codetools adds implicit conversion from Name => String
     printString(Name("Gary Oldman"))
 
-    // No implicit conversion from M[Name] => M[String] since it would hide copying
-    val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
+    // codetools doesn't add an implicit conversion M[String] => M[Name] since it would hide copying
+    val strings = List("Gary Oldman", "Christian Bale", "Philip Seymour Hoffman")
+    printNames(strings.map(Name))
+
+    // codetools doesn't add an implicit conversion M[Name] => M[String] since it would hide copying
+    val names = List(Name("Gary Oldman"), Name("Christian Bale"), Name("Philip Seymour Hoffman"))
     printStrings(names.map(_.underlying))
   }
 
@@ -52,16 +58,28 @@ object ExampleUsage {
 
     def printName(n: Name) = println(n)
     def printString(s: String) = println(s)
+    def printNames(ns: List[Name]) = println(ns)
     def printStrings(ss: List[String]) = println(ss)
+    def printStringsArr(ss: Array[String]) = println(ss.toSeq)
 
     // implicit def above provides trivial conversion String => Name
     printName("Gary Oldman")
     // No conversion needed since Name is an String
     printString(Name("Gary Oldman"))
 
+    // codetools adds trivial implicit conversion M[String] => M[Name]
+    val strings = List("Gary Oldman", "Christian Bale", "Philip Seymour Hoffman")
+    // Note: intellij Scala plugin shows erroneous error here
+    printNames(strings)
+
     // Covariance of List allows List[Name] to be upcast to List[Int] (no copying)
     val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
     printStrings(names)
+
+    // codetools adds trivial implicit conversion M[Name] => M[String] for invariants
+    val arrNames = Array(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
+    // Note: intellij Scala plugin shows erroneous error here
+    printStringsArr(arrNames)
   }
 
 

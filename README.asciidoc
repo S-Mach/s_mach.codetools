@@ -11,9 +11,8 @@ library.
 
 == Features
 * +IsValueClass[A]+: A base trait for a user-defined value-class that standardizes the name of
-the value-class val to "underlying" and toString to underlying toString. This
-allows creating an implicit conversion from an instance of any value-class to its
-underlying representation.
+the value-class val and toString implementation. This allows creating an implicit conversion
+from an instance of any value-class to its underlying representation.
 * +IsDistinctTypeAlias[A]+: marker trait used to mark a type alias as being a distinct type alias (DTA).
 A DTA is an alternative to the Scala value-class
 (http://docs.scala-lang.org/overviews/core/value-classes.html) that
@@ -70,7 +69,7 @@ and are governed by the rules of semantic versioning. Code files inside the
 libraries. However, no guarantees are made as to the stability or interface of
 code in the +s_mach.codetools.impl+ package between versions.
 
-== Example: IsValueClass[A]
+== Example: value-class
 
 ----
 Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
@@ -130,7 +129,7 @@ names: List[Name] = List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
 scala>
 ----
 
-== Example: IsDistinctTypeAlias[A]
+== Example: distinct type-alias
 
 ----
 Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
@@ -149,7 +148,9 @@ scala> :paste
 
     def printName(n: Name) = println(n)
     def printString(s: String) = println(s)
+    def printNames(ns: List[Name]) = println(ns)
     def printStrings(ss: List[String]) = println(ss)
+    def printStringsArr(ss: Array[String]) = println(ss.toSeq)
 
 
 // Exiting paste mode, now interpreting.
@@ -161,7 +162,9 @@ import scala.language.implicitConversions
 Name: (name: String)Name
 printName: (n: Name)Unit
 printString: (s: String)Unit
+printNames: (ns: List[Name])Unit
 printStrings: (ss: List[String])Unit
+printStringsArr: (ss: Array[String])Unit
 
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
@@ -180,6 +183,20 @@ Gary Oldman
 scala> :paste
 // Entering paste mode (ctrl-D to finish)
 
+    // codetools adds trivial implicit conversion M[String] => M[Name]
+    val strings = List("Gary Oldman", "Christian Bale", "Philip Seymour Hoffman")
+    // Note: intellij Scala plugin shows erroneous error here
+    printNames(strings)
+
+
+// Exiting paste mode, now interpreting.
+
+List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+strings: List[String] = List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
     // Covariance of List allows List[Name] to be upcast to List[Int] (no copying)
     val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
     printStrings(names)
@@ -189,6 +206,20 @@ scala> :paste
 
 List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
 names: List[Name] = List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+    // codetools adds trivial implicit conversion M[Name] => M[String] for invariants
+    val arrNames = Array(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
+    // Note: intellij Scala plugin shows erroneous error here
+    printStringsArr(arrNames)
+
+
+// Exiting paste mode, now interpreting.
+
+WrappedArray(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+arrNames: Array[Name] = Array(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
 
 scala>
 ----

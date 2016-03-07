@@ -40,14 +40,14 @@ can generate a +ReflectPrint+ implementation for any product type.
 * +ReflectPrintTest+: tests for the generated +ReflectPrint+ for various common
 ADT patterns (See +testdata+) in lieu of direct testing of +BlackboxHelper+
 since there is currently no blackbox.Context mock available.
-* For Play JSON support see https://github.com/S-Mach/s_mach.codetools-play_json[+s_mach.codetools-play_json+] companion library
+* For Play JSON support, see the https://github.com/S-Mach/s_mach.codetools-play_json[+s_mach.codetools-play_json+] companion library
 
 == Include in SBT
 1. Add to +build.sbt+
 +
 [source,sbt,numbered]
 ----
-libraryDependencies += "net.s_mach" %% "codetools" % "1.0.4"
+libraryDependencies += "net.s_mach" %% "codetools" % "2.0.0"
 ----
 NOTE: +s_mach.codetools+ is based on blackbox macro support, present only in Scala 2.11+
 
@@ -69,6 +69,117 @@ and are governed by the rules of semantic versioning. Code files inside the
 +s_mach.codetools.impl+ package may be used by downstream applications and
 libraries. However, no guarantees are made as to the stability or interface of
 code in the +s_mach.codetools.impl+ package between versions.
+
+== Example: IsValueClass[A]
+
+----
+Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+  import s_mach.codetools._
+
+  implicit class Name(
+    val underlying: String
+  ) extends AnyVal with IsValueClass[String]
+
+  def foo(s: String) = println(s)
+  def foos(ss: List[String]) = println(ss)
+
+
+// Exiting paste mode, now interpreting.
+
+import s_mach.codetools._
+defined class Name
+foo: (s: String)Unit
+foos: (ss: List[String])Unit
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+  // Implicit conversion from Name => String
+  foo(Name("asdf"))
+
+
+// Exiting paste mode, now interpreting.
+
+asdf
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+  // No implicit conversion from M[Name] => M[String] since it would hide copying
+  val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
+  foos(names.map(_.underlying))
+
+
+// Exiting paste mode, now interpreting.
+
+List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+names: List[Name] = List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+
+scala>
+----
+
+== Example: IsDistinctTypeAlias[A]
+
+----
+Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+  import s_mach.codetools._
+
+  trait AgeTag
+  type Age = Int with AgeTag with IsDistinctTypeAlias[Int]
+  import scala.language.implicitConversions
+  @inline implicit def Age(age: Int) = age.asInstanceOf[Age]
+
+  def bar(i :Int) = println(i)
+  def bars(is: List[Int]) = println(is)
+
+
+// Exiting paste mode, now interpreting.
+
+defined trait AgeTag
+defined type alias Age
+import scala.language.implicitConversions
+Age: (age: Int)Age
+bar: (i: Int)Unit
+bars: (is: List[Int])Unit
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+  // No need for implicit since Age is an Int
+  bar(Age(10))
+
+
+// Exiting paste mode, now interpreting.
+
+10
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+  val ages = List(Age(10),Age(20),Age(30))
+  // No conversion needed since covariance allows upcasting List[Age] to List[Int]
+  bars(ages)
+
+
+// Exiting paste mode, now interpreting.
+
+List(10, 20, 30)
+ages: List[Age] = List(10, 20, 30)
+
+scala>
+----
 
 == In Detail: +Product Type+
 A +product type+ is any type that can be expressed as sequence of fields whose

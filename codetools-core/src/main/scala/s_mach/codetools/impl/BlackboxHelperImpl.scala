@@ -18,7 +18,7 @@
 */
 package s_mach.codetools.impl
 
-import s_mach.codetools.{ProductTypeHelper, Result}
+import s_mach.codetools.macros.{ProductTypeHelper, Result}
 
 import scala.reflect.macros.blackbox
 

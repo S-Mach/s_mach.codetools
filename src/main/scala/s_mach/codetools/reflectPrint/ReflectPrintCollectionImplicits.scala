@@ -18,9 +18,10 @@
 */
 package s_mach.codetools.reflectPrint
 
+import s_mach.codetools.impl.{ReflectPrintOption, ReflectPrintTraversable}
+
 import scala.language.higherKinds
 import scala.reflect.ClassTag
-import s_mach.codetools.impl.{ReflectPrintTraversable, ReflectPrintOption}
 
 trait ReflectPrintCollectionImplicits {
   implicit def mkReflectPrint_Option[A](implicit pA:ReflectPrint[A]) =

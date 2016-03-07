@@ -11,12 +11,12 @@
        CLt1i    :,:    .1tfL.   /____/     /_/  /_/ \__,_/ \___//_/ /_/
        Lft1,:;:       , 1tfL:
        ;it1i ,,,:::;;;::1tti      s_mach.codetools
-         .t1i .,::;;; ;1tt        Copyright (c) 2015 S-Mach, Inc.
+         .t1i .,::;;; ;1tt        Copyright (c) 2016 S-Mach, Inc.
          Lft11ii;::;ii1tfL:       Author: lance.gatlin@gmail.com
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package s_mach.codetools
+package s_mach.codetools.macros
 
 import scala.language.higherKinds
 

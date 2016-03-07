@@ -18,7 +18,8 @@
 */
 package s_mach.codetools.impl
 
-import s_mach.codetools.reflectPrint._
+import s_mach.codetools._
+import s_mach.codetools.reflectPrint.{ReflectPrintFormat, ReflectPrint}
 
 trait SimpleReflectPrintImpl[A] extends ReflectPrint[A] {
   def print(a: A)(implicit cfg: ReflectPrintFormat): String

@@ -18,7 +18,8 @@
 */
 package s_mach.codetools.impl
 
-import s_mach.codetools.reflectPrint._
+import s_mach.codetools._
+import s_mach.codetools.reflectPrint.{ReflectPrintFormat, ReflectPrint}
 
 class ReflectPrintOption[A](implicit
   pA:ReflectPrint[A]

@@ -20,7 +20,7 @@ package s_mach.codetools
 
 import org.scalatest.{Matchers, FlatSpec}
 import testdata._
-import reflectPrint._
+import s_mach.codetools.reflectPrint._
 
 class ReflectPrintTest extends FlatSpec with Matchers {
   "Macro.printApply" must "correctly print the code necessary to create the same instance for a case class" in {

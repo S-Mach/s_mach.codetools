@@ -18,10 +18,11 @@
 */
 package s_mach.codetools.impl
 
+import s_mach.codetools.macros.{BlackboxHelper, Result}
+import s_mach.codetools.reflectPrint.{ReflectPrintMacroBuilder, ReflectPrint}
+
 import scala.language.experimental.macros
 import scala.reflect.macros.blackbox
-import s_mach.codetools.{Result, BlackboxHelper}
-import s_mach.codetools.reflectPrint._
 
 class ReflectPrintMacroBuilderImpl(
   val c: blackbox.Context,

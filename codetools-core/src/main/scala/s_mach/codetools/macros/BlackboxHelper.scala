@@ -16,11 +16,12 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package s_mach.codetools
+package s_mach.codetools.macros
 
 import s_mach.codetools.impl.BlackboxHelperImpl
 
 import scala.reflect.macros.blackbox
+import s_mach.codetools.macros._
 
 trait BlackboxHelper extends BlackboxHelperImpl { self =>
   val c:blackbox.Context

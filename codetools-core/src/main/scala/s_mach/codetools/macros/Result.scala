@@ -16,12 +16,11 @@
           .L1 1tt1ttt,,Li
             ...1LLLL...
 */
-package s_mach.codetools
+package s_mach.codetools.macros
 
 import java.io.{PrintWriter, StringWriter}
-
-import scala.language.higherKinds
 import scala.collection.generic.CanBuildFrom
+import scala.language.higherKinds
 import scala.util.control.NonFatal
 
 /**

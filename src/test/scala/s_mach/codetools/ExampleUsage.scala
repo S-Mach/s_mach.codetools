@@ -64,7 +64,7 @@ object ExampleUsage {
 
     // implicit def above provides trivial conversion String => Name
     printName("Gary Oldman")
-    // No conversion needed since Name is an String
+    // No conversion needed since Name is a String
     printString(Name("Gary Oldman"))
 
     // codetools adds trivial implicit conversion M[String] => M[Name]
@@ -76,7 +76,7 @@ object ExampleUsage {
     val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
     printStrings(names)
 
-    // codetools adds trivial implicit conversion M[Name] => M[String] for invariants
+    // codetools adds trivial implicit conversion M[Name] => M[String] for non-covariant
     val arrNames = Array(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
     // Note: intellij Scala plugin shows erroneous error here
     printStringsArr(arrNames)

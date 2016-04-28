@@ -1,38 +1,430 @@
-= s_mach.$PROJECT: $PROJECT_SHORT_DESC 
+= s_mach.codetools: Macro, codegen and code utility library
 Lance Gatlin <lance.gatlin@gmail.com>
-v1,$DATE
+v1,27-Dec-2014
 :blogpost-status: unpublished
 :blogpost-categories: s_mach, scala
 
-image:https://travis-ci.org/S-Mach/s_mach.$PROJECT.svg[Build Status, link="https://travis-ci.org/S-Mach/s_mach.$PROJECT"]
-image:https://coveralls.io/repos/S-Mach/s_mach.$PROJECT/badge.png[Test Coverage,link="https://coveralls.io/r/S-Mach/s_mach.$PROJECT"]
-image:https://api.codacy.com/project/badge/grade/cf9048205e154e8a9e01244de497db25[Codacy Badge,link="https://www.codacy.com/public/lancegatlin/s_mach.$PROJECT"]
-https://github.com/S-Mach/s_mach.$PROJECT[Code]
-http://s-mach.github.io/s_mach.$PROJECT/#s_mach.$PROJECT.package[Scaladoc]
+image:https://travis-ci.org/S-Mach/s_mach.codetools.svg[Build Status, link="https://travis-ci.org/S-Mach/s_mach.codetools"]  image:https://coveralls.io/repos/S-Mach/s_mach.codetools/badge.png?branch=master[Test Coverage,link="https://coveralls.io/r/S-Mach/s_mach.codetools"] https://github.com/S-Mach/s_mach.codetools[Code] http://s-mach.github.io/s_mach.codetools/#s_mach.codetools.package[Scaladoc]
 
-+s_mach.$PROJECT+ $PROJECT_LONG_DESC
++s_mach.codetools+ is an open-source Scala macro, codegen and code utility
+library.
+
+== Features
+* +IsValueClass[A]+: A base trait for a user-defined value-class that standardizes the name of
+the value-class val and toString implementation. This allows creating an implicit conversion
+from an instance of any value-class to its underlying representation.
+* +IsDistinctTypeAlias[A]+: marker trait used to mark a type alias as being a distinct type alias (DTA).
+A DTA is an alternative to the Scala value-class
+(http://docs.scala-lang.org/overviews/core/value-classes.html) that
+never needs to box (or unbox) since type aliases are eliminated in byte code.
+* +Result[A]+: a better +scala.util.Try+ that allows accumulating errors,
+warnings and other issues in addition to storing failure or success. Returned
+by most +BlackboxHelper+ methods.
+* +BlackboxHelper+: a wrapper trait that provides utility types and methods to
+assist in macro generation, specifically for generating type-class
+implementations for product types.
+** +BlackboxHelper.ProductType+: a case class for storing the matching
+apply/unapply methods and field info of a product type. Has utility methods for
+type-class implementation generation.
+** +BlackboxHelper.calcProductType+: method to attempt to compute a +ProductType+
+for a given type. Works for all case classes, tuple types and any other type
+whose companion object contains a matching apply/unapply method pair (See
++ProductType+ section below for details).
+* +ReflectPrint+: a demonstration type-class which can create the Scala code
+necessary for recreating an instance with the same value (See
++reflectPrint.printApply+).
+* +ReflectPrintMacroBuilderImpl+: a reference implementation of a type-class
+blackbox macro generator that uses +BlackboxHelper+. The macro implementation
+can generate a +ReflectPrint+ implementation for any product type.
+* +ReflectPrintTest+: tests for the generated +ReflectPrint+ for various common
+ADT patterns (See +testdata+) in lieu of direct testing of +BlackboxHelper+
+since there is currently no blackbox.Context mock available.
+* For Play JSON support, see the https://github.com/S-Mach/s_mach.codetools-play_json[+s_mach.codetools-play_json+] companion library
 
 == Include in SBT
 1. Add to +build.sbt+
 +
 [source,sbt,numbered]
 ----
-libraryDependencies += "net.s_mach" %% "$PROJECT" % "$PROJECT_VERSION"
+libraryDependencies += "net.s_mach" %% "codetools" % "2.0.0"
 ----
-NOTE: +s_mach.$PROJECT+ is currently only compiled for Scala 2.11 (though 2.10.4
-support can be added if there is interest)
+NOTE: +s_mach.codetools+ is based on blackbox macro support, present only in Scala 2.11+
+
+2. Or with Play JSON support:
++
+[source,sbt,numbered]
+----
+libraryDependencies ++= Seq(
+  "net.s_mach" %% "codetools" % "2.0.0",
+  "net.s_mach" %% "codetools-play_json" % "2.0.0"
+)
+----
 
 == Versioning
-+s_mach.$PROJECT+ uses semantic versioning (http://semver.org/). +s_mach.$PROJECT+
-does not use the package private modifier. Instead, all code files outside of
-the +s_mach.$PROJECT.impl+ package form the public interface and are governed by
-the rules of semantic versioning. Code files inside the +s_mach.$PROJECT.impl+
-package may be used by downstream applications and libraries. However, no
-guarantees are made as to the stability or interface of code in the
-+s_mach.$PROJECT.impl+ package between versions.
++s_mach.codetools+ uses semantic versioning (http://semver.org/).
++s_mach.codetools+ does not use the package private modifier. Instead, all code
+files outside of the +s_mach.codetools.impl+ package form the public interface
+and are governed by the rules of semantic versioning. Code files inside the
++s_mach.codetools.impl+ package may be used by downstream applications and
+libraries. However, no guarantees are made as to the stability or interface of
+code in the +s_mach.codetools.impl+ package between versions.
 
-== Overview
+== Example: value-class
 
-== Features
+----
+Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
+Type in expressions to have them evaluated.
+Type :help for more information.
 
-== Examples
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+    import s_mach.codetools._
+
+    implicit class Name(
+      val underlying: String
+    ) extends AnyVal with IsValueClass[String]
+
+    // codetools standardizes IsValueClass.toString to underlying.toString
+    def printName(n: Name) = println(n)
+    def printString(s: String) = println(s)
+    def printStrings(ss: List[String]) = println(ss)
+
+
+// Exiting paste mode, now interpreting.
+
+import s_mach.codetools._
+defined class Name
+printName: (n: Name)Unit
+printString: (s: String)Unit
+printStrings: (ss: List[String])Unit
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+    // Scala value-class auto wraps String => Name
+    printName("Gary Oldman")
+    // codetools adds implicit conversion from Name => String
+    printString(Name("Gary Oldman"))
+
+
+// Exiting paste mode, now interpreting.
+
+Gary Oldman
+Gary Oldman
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+    // No implicit conversion from M[Name] => M[String] since it would hide copying
+    val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
+    printStrings(names.map(_.underlying))
+
+
+// Exiting paste mode, now interpreting.
+
+List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+names: List[Name] = List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+
+scala>
+----
+
+== Example: distinct type-alias
+
+----
+Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+    import s_mach.codetools._
+
+    trait NameTag
+    type Name = String with NameTag with IsDistinctTypeAlias[String]
+    import scala.language.implicitConversions
+    @inline implicit def Name(name: String) = name.asInstanceOf[Name]
+
+    def printName(n: Name) = println(n)
+    def printString(s: String) = println(s)
+    def printNames(ns: List[Name]) = println(ns)
+    def printStrings(ss: List[String]) = println(ss)
+    def printStringsArr(ss: Array[String]) = println(ss.toSeq)
+
+
+// Exiting paste mode, now interpreting.
+
+import s_mach.codetools._
+defined trait NameTag
+defined type alias Name
+import scala.language.implicitConversions
+Name: (name: String)Name
+printName: (n: Name)Unit
+printString: (s: String)Unit
+printNames: (ns: List[Name])Unit
+printStrings: (ss: List[String])Unit
+printStringsArr: (ss: Array[String])Unit
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+    // implicit def above provides trivial conversion String => Name
+    printName("Gary Oldman")
+    // No conversion needed since Name is a String
+    printString(Name("Gary Oldman"))
+
+
+// Exiting paste mode, now interpreting.
+
+Gary Oldman
+Gary Oldman
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+    // codetools adds trivial implicit conversion M[String] => M[Name]
+    val strings = List("Gary Oldman", "Christian Bale", "Philip Seymour Hoffman")
+    // Note: intellij Scala plugin shows erroneous error here
+    printNames(strings)
+
+
+// Exiting paste mode, now interpreting.
+
+List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+strings: List[String] = List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+    // Covariance of List allows List[Name] to be upcast to List[Int] (no copying)
+    val names = List(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
+    printStrings(names)
+
+
+// Exiting paste mode, now interpreting.
+
+List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+names: List[Name] = List(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+    // codetools adds trivial implicit conversion M[Name] => M[String] for non-covariant
+    val arrNames = Array(Name("Gary Oldman"),Name("Christian Bale"),Name("Philip Seymour Hoffman"))
+    // Note: intellij Scala plugin shows erroneous error here
+    printStringsArr(arrNames)
+
+
+// Exiting paste mode, now interpreting.
+
+WrappedArray(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+arrNames: Array[Name] = Array(Gary Oldman, Christian Bale, Philip Seymour Hoffman)
+
+scala>
+----
+
+== In Detail: +Product Type+
+A +product type+ is any type that can be expressed as sequence of fields whose
+types are either data types (e.g. Int, String, etc) or other product types.
+Product types are
+http://en.wikipedia.org/wiki/Algebraic_data_type[algebraic data types] that can
+be decomposed into an ordered sequence of fields. Each field consists of an
+index within the sequence, a field name and a field type.
+
+In +s_mach.codetools+, product types are computed by finding the first
+unapply/apply method pair in the type's companion object with matching type
+signatures. The type signature of an apply method is equal to the sequence of
+the types of its arguments. Unapply methods may have one or two type signatures
+based on their return type. First, the outer Option of the return type is
+discarded, leaving only the inner type. If the inner type is a tuple type,
+then both the tuple type and the list of tuple type parameters form possible
+type signatures for the unapply method. Otherwise, if the inner type parameter
+is not a tuple type then the type signature of the unapply method is equal to
+the single type parameter. Once an apply/unapply match is made, the symbols of
+the apply method's argument list are used to extract the product type fields
+for the type. For tuple types and case classes, this will be the list of its
+fields.
+
+.Example 1:
+----
+class A(...) { ... }
+object A {
+    def apply(i: Int, s: String) : A = ???
+    def apply(i: Int, s: String, f: Float) : A = ???
+    def unapply(a: A) : Option[(Int,String)] = ???
+}
+----
+* The first apply method's type signature = +Int :: String :: Nil+
+* Possible unapply method's type signatures = +((Int,String) :: Nil) ::: (Int :: String :: Nil)+
+* Product type fields = +("i",Int) :: ("s",String) :: Nil+
+
+.Example 2:
+----
+class B(...) { ... }
+object B {
+  def apply(tuple: (String,Int)) : A = ???
+  def apply(i: Int, s: String) : A = ???
+  def unapply(b: B) : Option[(String,Int)] = ???
+}
+----
+* The first apply method's type signature = +(String,Int) :: Nil+
+* Possible unapply method's type signatures = +((String,Int) :: Nil) ::: (String :: Int :: Nil)+
+* Product type fields = +("tuple",(String,Int)) :: Nil+
+
+.Example 3:
+----
+class Enum(...) { ... }
+object Enum {
+  def apply(value: String) : A = ???
+  def unapply(e: Enum) : Option[String] = ???
+}
+----
+* The first apply method's type signature = +String :: Nil+
+* Possible unapply method's type signatures = +String :: Nil+
+* Product type fields = +("value",String) :: Nil+
+
+.Example 4:
+----
+case class CaseClass(i: Int, s: String)
+----
+* The first apply method's type signature = +Int :: String :: Nil+
+* Possible unapply method's type signatures = +((Int,String) :: Nil) ::: (Int:: String :: Nil)+
+* Product type fields = +("i",Int) :: ("s",String) :: Nil+
+
+.Example 5:
+----
+class Tuple2[T1,T2](val _1: T1,val _2 : T2)
+----
+* The first apply method's type signature = +T1 :: T2 :: Nil+
+* Possible unapply method's type signatures = +((T1,T2) :: Nil) ::: (T1:: T2 :: Nil)+
+* Product type fields = +("_1",T1) :: ("_2",T2) :: Nil+
+
+== Example: ReflectPrint
+----
+Welcome to Scala version 2.11.1 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_72).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+import s_mach.codetools.reflectPrint._
+
+case class Movie(
+  name: String,
+  year: Int
+)
+
+object Movie {
+  implicit val reflectPrint_Movie = ReflectPrint.forProductType[Movie]
+}
+
+case class Name(
+  firstName: String,
+  middleName: Option[String],
+  lastName: String
+)
+
+object Name {
+  implicit val reflectPrint_Name = ReflectPrint.forProductType[Name]
+}
+
+
+case class Actor(
+  name: Name,
+  age: Int,
+  movies: Set[Movie]
+)
+
+object Actor {
+  implicit val reflectPrint_Person = ReflectPrint.forProductType[Actor]
+}
+
+val n1 = Name("Gary",Some("Freakn"),"Oldman")
+val n2 = Name("Guy",None,"Pearce")
+val n3 = Name("Lance",None,"Gatlin")
+
+val m1 = Movie("The Professional",1994)
+val m2 = Movie("The Fifth Element",1997)
+val m3 = Movie("Memento",1994)
+val m4 = Movie("Prometheus",2012)
+
+val a1 = Actor(n1,56,Set(m1,m2))
+val a2 = Actor(n2,47,Set(m3,m4))
+val a3 = Actor(n3,37,Set.empty)
+
+// Exiting paste mode, now interpreting.
+
+import s_mach.codetools.reflectPrint._
+defined class Movie
+defined object Movie
+defined class Name
+defined object Name
+defined class Actor
+defined object Actor
+n1: Name = Name(Gary,Some(Freakn),Oldman)
+n2: Name = Name(Guy,None,Pearce)
+n3: Name = Name(Lance,None,Gatlin)
+m1: Movie = Movie(The Professional,1994)
+m2: Movie = Movie(The Fifth Element,1997)
+m3: Movie = Movie(Memento,1994)
+m4: Movie = Movie(Prometheus,2012)
+a1: Actor = Actor(Name(Gary,Some(Freakn),Oldman),56,Set(Movie(The Professional,1994), Movie(The Fifth Element,1997)))
+a2: Actor = Actor(Name(Guy,None,Pearce),47,Set(Movie(Memento,1994), Movie(Prometheus,2012)))
+a3: Actor = Actor(Name(Lance,None,Gatlin),37,Set())
+
+scala> a1.printApply
+res0: String = Actor(name=Name(firstName="Gary",middleName=Some("Freakn"),lastName="Oldman"),age=56,movies=Set(Movie(name="The Professional",year=1994),Movie(name="The Fifth Element",year=1997)))
+
+scala> val alt1 = Actor(name=Name(firstName="Gary",middleName=Some("Freakn"),lastName="Oldman"),age=56,movies=Set(Movie(name="The Professional",year=1994),Movie(name="The Fifth Element",year=1997)))
+alt1: Actor = Actor(Name(Gary,Some(Freakn),Oldman),56,Set(Movie(The Professional,1994), Movie(The Fifth Element,1997)))
+
+scala> alt1 == a1
+res1: Boolean = true
+
+scala> a1.printUnapply
+res2: String = (Name(firstName="Gary",middleName=Some("Freakn"),lastName="Oldman"),56,Set(Movie(name="The Professional",year=1994),Movie(name="The Fifth Element",year=1997)))
+
+scala> val ualt1 = (Name(firstName="Gary",middleName=Some("Freakn"),lastName="Oldman"),56,Set(Movie(name="The Professional",year=1994),Movie(name="The Fifth Element",year=1997)))
+ualt1: (Name, Int, scala.collection.immutable.Set[Movie]) = (Name(Gary,Some(Freakn),Oldman),56,Set(Movie(The Professional,1994), Movie(The Fifth Element,1997)))
+
+scala> ualt1 == Actor.unapply(a1).get
+res3: Boolean = true
+
+scala> import ReflectPrintFormat.Implicits.verbose
+import ReflectPrintFormat.Implicits.verbose
+
+scala> a2.printApply
+res4: String =
+Actor(
+  name = Name(
+    firstName = "Guy",
+    middleName = None,
+    lastName = "Pearce"
+  ),
+  age = 47,
+  movies = Set(
+    Movie(
+      name = "Memento",
+      year = 1994
+    ),
+    Movie(
+      name = "Prometheus",
+      year = 2012
+    )
+  )
+)
+
+scala> a3.printApply
+res5: String =
+Actor(
+ name = Name(
+  firstName = "Lance",
+  middleName = None,
+  lastName = "Gatlin"
+ ),
+ age = 37,
+ movies = Set.empty
+)
+----

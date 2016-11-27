@@ -24,50 +24,63 @@ package s_mach.codetools
  * (http://docs.scala-lang.org/overviews/core/value-classes.html) that
  * never needs to box (or unbox) since type aliases are eliminated in byte code.
  *
+ * A DTA is declared with a unique empty trait "tag" to make the type alias distinct
+ * in the type system. Since the DTA is a distinct type from its alias, implicit
+ * generics (e.g. type-classes) of the DTA can be resolved separately from the aliased
+ * type. Implicits resolving a normal type-alias will always resolve to an instance for
+ * the aliased type.
  *
- * A DTA is always declared with a unique trait tag to make the type alias distinct
- * in the type system. Since the DTA is a distinct type, type-classes of the
- * DTA can be implicitly resolved. In Scala, a normal type alias would always resolve
- * to its underlying type.
+ * Example:
+ * {{{
+ * type Age1 = Int
+ * implicitly[Format[Age1] ] // resolves to Format[Int] b/c Age1 isn't distinct
+ * trait AgeTag // empty "tag" trait
+ * type Age = Int with AgeTag
+ * implicitly[Format[Age] ] // resolves to Format[Age] b/c Age is distinct
+ * }}}
  *
- * Tagging a type alias example:
- * type Age1 = Int // implicitly[Format[Age] ] resolves to Format[Int]
- * trait AgeTag
- * type Age = Int with AgeTag // implicitly[Format[Age] ] is distinct from Format[Int]
+ * Unlike value-classes, which are elided by the compiler under most circumstances, DTAs
+ * are always elided at runtime. Value-classes used in any kind of generic, such as List
+ * or Option, cannot be elided by the compiler and boxing/unboxing penalties are incurred.
  *
+ * This means if a conversion from a generic of the value-class type to the underlying type
+ * is required (or vice-versa), a map operation must be used to box or unbox the value-class.
+ * This incurs a O(n) penalty simply to cast between the value-class and the underlying type.
+ * Because DTAs are type aliases for their underlying type the compiler treats a
+ * generic of a DTA as a generic of the underlying type without any impact on runtime.
  *
- * Value-classes are elided by the compiler under many circumstances, but
- * when used in any kind of generic, such as List or Option, they are emitted.
- * To convert from a generic of the value-class type to the underlying type
- * requires a no-op runtime call in byte code that may or may not be eliminated
- * by downstream optimization. For collections such as List, this means a O(n)
- * call to map simply to cast from the value-class to the underlying type. Because
- * DTAs are simply type aliases for their underlying type the compiler can simply
- * treat a generic of a DTA as a generic of the underlying type without any impact
- * on runtime.
- *
- * Converting the other direction for value-classes suffers from the same problem as
- * stated above. Because DTAs require a distinct tag, the compiler can not automatically
- * perform the downcast. Instead, implicit defs are created to support the operation
- * as a casting operation that should be eliminated in otput byte code.
+ * While covariant generics will automatically cast from a generic of the DTA to its underlying
+ * type, casting from the underlying type to the DTA is not supported directly. Instead an implicit
+ * generic converter must be imported:
  *
  * Example generic converter:
+ * {{{
  * implicit def ma_to_mv[M[_],V < : IsDistinctTypeAlias[A],A](
  *   ma: M[A]
  * ) : M[V] = ma.asInstanceOf[M[V] ]
+ * }}}
  *
- * A DTA is declared by first creating a trait tag that is used to make the DTA
- * distinct. Next, the type alias is declared as a mix of the underlying type,
- * the tag and the marker trait IsDistinctTypeAlias. The IsDistinctTypeAlias marker
- * trait is used to in implicit def conversions that convert generics (such as
- * collections) without overhead.
+ * Note: this converter is declared in codetools package.scala
  *
- * Full example:
+ * To declare a DTA, first create an empty trait tag. Next, declare a type alias for
+ * the aliased type but that also extends the tag and the marker trait
+ * IsDistinctTypeAlias. Finally, declare an implicit def constructor method that
+ * mimics the apply method of a companion object.
+ *
+ * Example:
+ * {{{
  * trait AgeTag
  * type Age = Int with AgeTag with IsDistinctTypeAlias[Int]
  * implicit def Age(i: Int) = i.asInstanceOf[Age]
+ * }}}
  *
- * @tparam A
+ * Note1: The IsDistinctTypeAlias marker trait self-documents the DTA and
+ * is used by the implicit def converters to prevent ambiguous implicit resolution errors.
+ * Note2: While it is possible to declare an object for the DTA, it will not be treated
+ * as a companion object for the DTA by the compiler (implicit generics in the object
+ * will not resolve implicitly like normal companion objects)
+ *
+ * @tparam A type aliased by the DTA
  */
 trait IsDistinctTypeAlias[A] { self: A =>
 

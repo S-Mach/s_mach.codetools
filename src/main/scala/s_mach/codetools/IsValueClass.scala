@@ -20,32 +20,37 @@ package s_mach.codetools
 
 /**
  * A base trait for a user-defined value-class that standardizes the name of
- * the value-class val to "underlying" and toString to underlying toString. This
- * allows creating an implicit conversion from an instance of any value-class to its
- * underlying representation.
+ * the value-class val to "underlying" and the toString implementation to
+ * underlying.toString. This allows creating an implicit conversion from an
+ * instance of any value-class to its underlying representation.
  *
  * For details on value-class see:
  * http://docs.scala-lang.org/overviews/core/value-classes.html
  *
- * Example value-class:
+ * Example:
+ * {{{
  * implicit class Name(underlying: String) extends AnyVal with IsValueType[String]
+ * }}}
  *
- * Note1: When using creating a value-class for String, it is necessary to create an
+ * Note1: When creating a value-class for String, it is necessary to create an
  * implicit view to StringOps to use the Scala extended String methods on instances
  * of the value-class.
- * Example for Name above:
+ * Example:
+ * {{{
  * object Name {
  *   import scala.collection.immutable.StringOps
  *   implicit def stringOps_Name(n: Name) = new StringOps(n.underlying)
  * }
+ * }}}
  *
  * Note2: while almost every method on underlying can be used on the value-class without
  * special code, the equals method is a special case that still requires wrapping the
  * right-hand type in the value-class to match the other side. Ex:
- *
+ * {{{
  * Name("Hal") == "Hal" // always returns false + compiler warning
  * Name("Hal") == Name("Hal") // works correctly
- *
+ * }}}
+  *
  * @tparam A type of underlying value class (Note: this parameter does not require
  *           inheritance from AnyVal since this would prevent using the trait with
  *           java.lang.String which does not inherit AnyVal)

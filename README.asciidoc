@@ -39,6 +39,8 @@ can generate a +ReflectPrint+ implementation for any product type.
 * +ReflectPrintTest+: tests for the generated +ReflectPrint+ for various common
 ADT patterns (See +testdata+) in lieu of direct testing of +BlackboxHelper+
 since there is currently no blackbox.Context mock available.
+* +CaseClassCodegen+: methods for generating Scala code for case classes and big
+(>22 fields) case class equivalents.
 * For Play JSON support, see the https://github.com/S-Mach/s_mach.codetools-play_json[+s_mach.codetools-play_json+] companion library
 
 == Include in SBT

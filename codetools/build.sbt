@@ -2,5 +2,5 @@
 scalacOptions += "-Xlint:-nullary-unit,_"
 
 libraryDependencies ++= Seq(
-  "net.s_mach" %% "string" % "2.0.1"
+  "net.s_mach" %% "string" % "2.1.0"
 )

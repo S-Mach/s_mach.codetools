@@ -7,7 +7,8 @@ matrix:
    - scala: 2.12.1
      env: JDK=oraclejdk8
    - scala: 2.11.8
-     env: JDK=openjdk6
+     # This should be openjdk6 but changed to oraclejdk8 due to oddity with scoverage
+     env: JDK=oraclejdk8
 notifications:
   email:
     recipients:
@@ -15,7 +16,7 @@ notifications:
 script:
  # Fix issue where JDK env from matrix above not picked up by travis
  - jdk_switcher use $JDK
- - sbt ++$TRAVIS_SCALA_VERSION coverage test coverageReport -J-Xmx4g
+ - sbt plz $TRAVIS_SCALA_VERSION coverage test coverageReport -J-Xmx4g
 after_success:
  - sbt coveralls
  - sbt codacyCoverage

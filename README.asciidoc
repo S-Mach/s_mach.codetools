@@ -46,9 +46,9 @@ since there is currently no blackbox.Context mock available.
 +
 [source,sbt,numbered]
 ----
-libraryDependencies += "net.s_mach" %% "codetools" % "2.0.0"
+libraryDependencies += "net.s_mach" %% "codetools" % "2.1.0"
 ----
-NOTE: +s_mach.codetools+ is based on blackbox macro support, present only in Scala 2.11+
+NOTE: +s_mach.codetools+ is cross compiled for Scala 2.11/JDK6 and 2.12/JDK8
 
 2. Or with Play JSON support:
 +

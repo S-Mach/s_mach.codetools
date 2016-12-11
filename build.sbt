@@ -1,6 +1,11 @@
-name := "codetools"
 
-libraryDependencies ++= Seq(
-  "net.s_mach" %% "codetools-core" % version.value,
-  "org.scalatest" %% "scalatest" % "2.2.0" % "test"
-)
+lazy val `codetools-core` =
+  project
+
+lazy val codetools =
+  project
+    .dependsOn(`codetools-core`)
+
+lazy val `codetools-play_json` =
+  project
+    .dependsOn(codetools)

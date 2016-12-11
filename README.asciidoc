@@ -55,10 +55,12 @@ NOTE: +s_mach.codetools+ is cross compiled for Scala 2.11/JDK6 and 2.12/JDK8
 [source,sbt,numbered]
 ----
 libraryDependencies ++= Seq(
-  "net.s_mach" %% "codetools" % "2.0.0",
-  "net.s_mach" %% "codetools-play_json" % "2.0.0"
+  "net.s_mach" %% "codetools" % "2.1.0",
+  "net.s_mach" %% "codetools-play_json" % "2.1.0"
 )
 ----
+NOTE: +s_mach.codetools-play_json+ is compiled only for Scala 2.11/JDK6 while
+waiting for Play framework adoption of Scala 2.12
 
 == Versioning
 +s_mach.codetools+ uses semantic versioning (http://semver.org/).

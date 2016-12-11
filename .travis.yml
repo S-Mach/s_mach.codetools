@@ -16,6 +16,7 @@ notifications:
 script:
  # Fix issue where JDK env from matrix above not picked up by travis
  - jdk_switcher use $JDK
+ # Use plz instead of ++ from sbt-doge plugin to respect subproject crossScalaVersions
  - sbt plz $TRAVIS_SCALA_VERSION coverage test coverageReport -J-Xmx4g
 after_success:
  - sbt coveralls

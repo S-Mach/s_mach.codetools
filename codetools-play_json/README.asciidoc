@@ -1,0 +1,105 @@
+= s_mach.codetools-play_json: codetools Play JSON specific utility library
+Lance Gatlin <lance.gatlin@gmail.com>
+v1,1-Mar-16
+:blogpost-status: unpublished
+:blogpost-categories: s_mach, scala
+
+image:https://travis-ci.org/S-Mach/s_mach.codetools-play_json.svg[Build Status, link="https://travis-ci.org/S-Mach/s_mach.codetools-play_json"]
+image:https://coveralls.io/repos/S-Mach/s_mach.codetools-play_json/badge.png[Test Coverage,link="https://coveralls.io/r/S-Mach/s_mach.codetools-play_json"]
+image:https://api.codacy.com/project/badge/grade/cf9048205e154e8a9e01244de497db25[Codacy Badge,link="https://www.codacy.com/public/lancegatlin/s_mach.codetools-play_json"]
+https://github.com/S-Mach/s_mach.codetools-play_json[Code]
+http://s-mach.github.io/s_mach.codetools-play_json/#s_mach.codetools-play_json.package[Scaladoc]
+
++s_mach.codetools-play_json+ is a companion library to the +s_mach.codetools+ library that includes support for creating
+Play JSON (de)serializers for value-classes and distinct type-aliases.
+
+== Include in SBT
+1. Add to +build.sbt+
++
+[source,sbt,numbered]
+----
+libraryDependencies ++= Seq(
+  "net.s_mach" %% "codetools" % "2.1.0",
+  "net.s_mach" %% "codetools-play_json" % "2.1.0"
+)
+----
+NOTE: +s_mach.codetools-play_json+ is compiled only for Scala 2.11/JDK6 while
+waiting for Play framework adoption of Scala 2.12
+
+== Versioning
++s_mach.codetools-play_json+ uses semantic versioning (http://semver.org/). +s_mach.codetools-play_json+
+does not use the package private modifier. Instead, all code files outside of
+the +s_mach.codetools-play_json.impl+ package form the public interface and are governed by
+the rules of semantic versioning. Code files inside the +s_mach.codetools-play_json.impl+
+package may be used by downstream applications and libraries. However, no
+guarantees are made as to the stability or interface of code in the
++s_mach.codetools-play_json.impl+ package between versions.
+
+== Features
+
+* +Json.forValueClass.format+ (or +writes+ or +reads+): create Play JSON (de)serializer for a value-class (that inherits +IsValueClass[A]+)
+* +Json.forDistinctTypeAlias.format+ (or +writes+ or +reads+): create Play JSON (de)serializer for a distinct type-alias
+
+== Examples
+
+----
+Welcome to Scala version 2.11.7 (Java HotSpot(TM) 64-Bit Server VM, Java 1.7.0_79).
+Type in expressions to have them evaluated.
+Type :help for more information.
+
+scala> import play.api.libs.json._
+import play.api.libs.json._
+
+scala> import s_mach.codetools._
+import s_mach.codetools._
+
+scala> import s_mach.codetools-play_json._
+import s_mach.codetools.play_json._
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+  implicit class Name(
+    val underlying: String
+  ) extends AnyVal with IsValueClass[String]
+
+  implicit val format_Name = Json.forValueClass.format[Name,String]
+
+
+// Exiting paste mode, now interpreting.
+
+defined class Name
+format_Name: play.api.libs.json.Format[Name] = play.api.libs.json.Format$$anon$3@64a25c7b
+
+scala> println(Json.toJson(Name("Gary Oldman")))
+"Gary Oldman"
+
+scala> println(Json.fromJson[Name](JsString("Gary Oldman")))
+JsSuccess(Gary Oldman,)
+
+scala> :paste
+// Entering paste mode (ctrl-D to finish)
+
+  trait AgeTag
+  type Age = Int with AgeTag with IsDistinctTypeAlias[Int]
+  import scala.language.implicitConversions
+  @inline implicit def Age(age: Int) = age.asInstanceOf[Age]
+  implicit val format_Age = Json.forDistinctTypeAlias.format[Age,Int]
+
+
+// Exiting paste mode, now interpreting.
+
+defined trait AgeTag
+defined type alias Age
+import scala.language.implicitConversions
+Age: (age: Int)Age
+format_Age: play.api.libs.json.Format[Age] = play.api.libs.json.Format$$anon$3@70ac63f3
+
+scala> println(Json.toJson(Age(54)))
+54
+
+scala> println(Json.fromJson[Age](JsNumber(54)))
+JsSuccess(54,)
+
+scala>
+----

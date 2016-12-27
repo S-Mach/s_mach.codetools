@@ -7,8 +7,7 @@ matrix:
    - scala: 2.12.1
      env: JDK=oraclejdk8
    - scala: 2.11.8
-     # This should be openjdk6 but changed to oraclejdk8 due to oddity with scoverage
-     env: JDK=oraclejdk8
+     env: JDK=openjdk6
 notifications:
   email:
     recipients:
@@ -17,12 +16,22 @@ script:
  # Fix issue where JDK env from matrix above not picked up by travis
  - jdk_switcher use $JDK
  # Use plz instead of ++ from sbt-doge plugin to respect subproject crossScalaVersions
- - sbt coverage "plz $TRAVIS_SCALA_VERSION test" coverageReport -J-Xmx4g
+ - sbt "plz $TRAVIS_SCALA_VERSION test"  -J-Xmx4g
 after_success:
- - sbt coveralls
- - sbt codacyCoverage
  - >
-      test "${TRAVIS_PULL_REQUEST}" = 'false' &&
-      test "${TRAVIS_BRANCH}" == 'master' &&
-      test "${TRAVIS_JDK_VERSION}" = 'openjdk6' &&
-      sbt 'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))' publish
+      test "${TRAVIS_SCALA_VERSION}" = '2.12.1' &&
+      sbt clean coverage test coverageReport  -J-Xmx4g
+ - >
+      test "${TRAVIS_SCALA_VERSION}" = '2.12.1' &&
+      sbt coverageAggregate
+ - >
+      test "${TRAVIS_SCALA_VERSION}" = '2.12.1' &&
+      sbt coveralls
+ - >
+      test "${TRAVIS_SCALA_VERSION}" = '2.12.1' &&
+      sbt codacyCoverage
+#- >
+#      test "${TRAVIS_PULL_REQUEST}" = 'false' &&
+#      test "${TRAVIS_BRANCH}" == 'master' &&
+#      test "${TRAVIS_JDK_VERSION}" = 'openjdk6' &&
+#      sbt 'set credentials += Credentials("Sonatype Nexus Repository Manager", "oss.sonatype.org", System.getenv("SONATYPE_USER"), System.getenv("SONATYPE_PASS"))' publish
